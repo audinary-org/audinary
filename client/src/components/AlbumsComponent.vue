@@ -1066,16 +1066,4 @@ export default {
   will-change: transform;
 }
 
-/* Optimize hover effects */
-.group:hover {
-  /* Use transform instead of changing other properties for better performance */
-  transform: translateZ(0);
-}
-
-/* Ensure smooth transitions without triggering layout recalculations */
-.group .transition-all {
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
-}
 </style>
