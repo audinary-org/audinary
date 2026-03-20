@@ -40,7 +40,7 @@
           <div
             v-for="artist in artists"
             :key="artist.artist_id"
-            class="flex-shrink-0 w-60 group bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+            class="flex-shrink-0 w-60 group bg-white/15 rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/25"
             @click="showArtistAlbums(artist)"
           >
             <div class="relative">
@@ -89,7 +89,7 @@
                 </div>
                 <!-- Favorite icon (top right) -->
                 <button
-                  class="absolute top-2 right-2 w-8 h-8 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110 z-[10]"
+                  class="absolute top-2 right-2 w-8 h-8 bg-black/40 hover:bg-black/60 rounded-full flex items-center justify-center transition-all hover:scale-110 z-[10]"
                   @click.stop="toggleArtistFavorite(artist)"
                   :title="$t('common.favorite')"
                 >

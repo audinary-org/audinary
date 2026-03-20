@@ -175,7 +175,7 @@
             @click="viewArtistAlbums(artist)"
           >
             <div
-              class="bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+              class="bg-white/10 backdrop-blur-lg rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
             >
               <div class="relative overflow-hidden mx-auto aspect-square">
                 <!-- Artist image with frame overlay -->
@@ -265,7 +265,7 @@
             @click="viewArtistAlbums(artist)"
           >
             <div
-              class="bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+              class="bg-white/10 backdrop-blur-lg rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
             >
               <div class="flex items-center">
                 <!-- Artist image (left side) -->

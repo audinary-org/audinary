@@ -127,7 +127,7 @@
         <div
           v-for="share in filteredShares"
           :key="share.id"
-          class="flex items-center p-2 rounded-md group bg-white/10 backdrop-blur-lg drop-shadow-lg hover:bg-white/20 transition-all"
+          class="flex items-center p-2 rounded-md group bg-white/10 backdrop-blur-lg shadow-lg hover:bg-white/20 transition-all"
         >
           <!-- Type Icon -->
           <div

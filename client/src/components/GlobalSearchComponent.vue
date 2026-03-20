@@ -81,7 +81,7 @@
               <div
                 v-for="album in results.albums"
                 :key="album.album_id"
-                class="flex-shrink-0 w-60 group bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+                class="flex-shrink-0 w-60 group bg-white/10 backdrop-blur-lg rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
                 @click="openAlbumDetail(album)"
               >
                 <div class="relative">
@@ -193,7 +193,7 @@
               <div
                 v-for="artist in results.artists"
                 :key="artist.artist_id"
-                class="flex-shrink-0 w-60 group bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+                class="flex-shrink-0 w-60 group bg-white/10 backdrop-blur-lg rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
                 @click="showArtist(artist)"
               >
                 <div class="relative">
@@ -284,7 +284,7 @@
               <div
                 v-for="(song, index) in results.songs"
                 :key="song.song_id"
-                class="flex items-center p-3 rounded-lg mb-2 cursor-pointer bg-white/10 backdrop-blur-lg drop-shadow-lg transition-all duration-200 hover:bg-white/20"
+                class="flex items-center p-3 rounded-lg mb-2 cursor-pointer bg-white/10 backdrop-blur-lg shadow-lg transition-all duration-200 hover:bg-white/20"
                 @click="playSong(song)"
               >
                 <div class="w-8 text-center text-sm text-white/80 mr-3">

@@ -163,7 +163,7 @@
           <div
             v-for="song in songs"
             :key="song.song_id"
-            class="flex items-center p-2 rounded-md group bg-white/10 backdrop-blur-lg drop-shadow-lg hover:bg-white/20"
+            class="flex items-center p-2 rounded-md group bg-white/10 backdrop-blur-lg shadow-lg hover:bg-white/20"
             @click="playSong(song)"
           >
             <div class="w-10 text-center text-white/80 mr-3">
@@ -347,7 +347,7 @@
             @click="playSong(song)"
           >
             <div
-              class="bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+              class="bg-white/10 backdrop-blur-lg rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
             >
               <div class="relative">
                 <div class="relative overflow-hidden mx-auto aspect-square">

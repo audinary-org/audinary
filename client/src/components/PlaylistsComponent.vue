@@ -50,7 +50,7 @@
           <div
             v-for="playlist in filteredPlaylists"
             :key="playlist.id"
-            class="flex-shrink-0 w-60 group bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+            class="flex-shrink-0 w-60 group bg-white/10 backdrop-blur-lg rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
             @click="openPlaylistDetail(playlist.id)"
           >
             <div class="relative">
@@ -173,7 +173,7 @@
             class="w-full"
           >
             <div
-              class="bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+              class="bg-white/10 backdrop-blur-lg rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
               @click="openPlaylistDetail(playlist.id)"
             >
               <div class="flex items-center">

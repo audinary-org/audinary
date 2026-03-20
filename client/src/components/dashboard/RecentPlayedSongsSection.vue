@@ -30,7 +30,7 @@
       <div
         v-for="(song, index) in songs"
         :key="song.song_id"
-        class="flex items-center p-3 rounded-lg mb-2 cursor-pointer bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+        class="flex items-center p-3 rounded-lg mb-2 cursor-pointer bg-white/15 rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/25"
         @click="playSong(song)"
       >
         <div class="w-8 text-center text-sm text-white/80 mr-3">
@@ -84,28 +84,28 @@
 
         <div class="flex gap-1">
           <button
-            class="w-8 h-8 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110"
+            class="w-8 h-8 bg-black/40 hover:bg-black/60 rounded-full flex items-center justify-center transition-all hover:scale-110"
             @click.stop="playSong(song)"
             :title="$t('player.play')"
           >
             <i class="bi bi-play-fill text-xs text-white"></i>
           </button>
           <button
-            class="w-8 h-8 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110"
+            class="w-8 h-8 bg-black/40 hover:bg-black/60 rounded-full flex items-center justify-center transition-all hover:scale-110"
             @click.stop="addToQueue(song)"
             :title="$t('songs.add-to-queue')"
           >
             <i class="bi bi-list text-xs text-white"></i>
           </button>
           <button
-            class="w-8 h-8 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110"
+            class="w-8 h-8 bg-black/40 hover:bg-black/60 rounded-full flex items-center justify-center transition-all hover:scale-110"
             @click.stop="showPlaylistAddToModal(song)"
             :title="$t('songs.add_to_playlist')"
           >
             <i class="bi bi-music-note-list text-xs text-white"></i>
           </button>
           <button
-            class="w-8 h-8 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110"
+            class="w-8 h-8 bg-black/40 hover:bg-black/60 rounded-full flex items-center justify-center transition-all hover:scale-110"
             @click.stop="toggleSongFavorite(song)"
             :title="$t('songs.favorite')"
           >

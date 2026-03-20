@@ -22,14 +22,6 @@
 /* Firefox */
 * { scrollbar-width: thin; scrollbar-color: #4b5563 #1f2937; }
 
-/* Fix Firefox backdrop-filter flickering:
-   filter (drop-shadow) + backdrop-filter on the same element causes rendering bugs in Firefox.
-   Replace drop-shadow (filter-based) with box-shadow on elements that also use backdrop-blur. */
-[class*="backdrop-blur"][class*="drop-shadow"] {
-  filter: none !important;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
-}
-
 /* Prevent transition-all from animating backdrop-filter in Firefox */
 [class*="backdrop-blur"][class*="transition-all"] {
   transition-property: background-color, transform, opacity, box-shadow;

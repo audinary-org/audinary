@@ -44,7 +44,7 @@
           <div
             v-for="album in albums"
             :key="album.album_id"
-            class="flex-shrink-0 w-60 group bg-white/10 backdrop-blur-lg rounded drop-shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/20"
+            class="flex-shrink-0 w-60 group bg-white/15 rounded shadow-lg p-2 h-full transition-all duration-200 hover:bg-white/25"
             @click="showAlbumDetail(album)"
           >
             <div class="relative">
@@ -95,7 +95,7 @@
                 </div>
                 <!-- Favorite icon (top right) -->
                 <button
-                  class="absolute top-2 right-2 w-8 h-8 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110 z-[10]"
+                  class="absolute top-2 right-2 w-8 h-8 bg-black/40 hover:bg-black/60 rounded-full flex items-center justify-center transition-all hover:scale-110 z-[10]"
                   @click.stop="toggleAlbumFavorite(album)"
                   :title="$t('common.favorite')"
                 >
@@ -110,7 +110,7 @@
                 </button>
                 <!-- Add to queue button (bottom left) -->
                 <button
-                  class="absolute bottom-8 left-6 w-8 h-8 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110 opacity-0 group-hover:opacity-100 z-[10]"
+                  class="absolute bottom-8 left-6 w-8 h-8 bg-black/40 hover:bg-black/60 rounded-full flex items-center justify-center transition-all hover:scale-110 opacity-0 group-hover:opacity-100 z-[10]"
                   @click.stop="addToQueue(album)"
                   :title="$t('songs.add-to-queue')"
                 >
@@ -118,7 +118,7 @@
                 </button>
                 <!-- Add to playlist button (bottom right) -->
                 <button
-                  class="absolute bottom-8 right-2 w-8 h-8 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110 opacity-0 group-hover:opacity-100 z-[10]"
+                  class="absolute bottom-8 right-2 w-8 h-8 bg-black/40 hover:bg-black/60 rounded-full flex items-center justify-center transition-all hover:scale-110 opacity-0 group-hover:opacity-100 z-[10]"
                   @click.stop="showPlaylistAddToModal(album)"
                   :title="$t('songs.add_to_playlist')"
                 >
