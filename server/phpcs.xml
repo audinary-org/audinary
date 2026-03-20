@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<ruleset name="Audinary coding standard">
+    <description>Audinary coding standard based on PSR-12</description>
+
+    <!-- display progress -->
+    <arg value="p"/>
+    <!-- use colors in output -->
+    <arg name="colors"/>
+
+    <!-- inherit rules from: -->
+    <rule ref="PSR12"/>
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+
+    <!-- Allow 160 char lines (PSR-12 soft limit is 120, but SQL queries and route definitions need more) -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="160"/>
+            <property name="absoluteLineLimit" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Entry points and scripts legitimately have side effects -->
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>public/index.php</exclude-pattern>
+        <exclude-pattern>scripts/*</exclude-pattern>
+        <exclude-pattern>routes/*</exclude-pattern>
+        <exclude-pattern>src/Helpers.php</exclude-pattern>
+    </rule>
+
+    <!-- Entry points and scripts may define classes without namespaces -->
+    <rule ref="PSR1.Classes.ClassDeclaration">
+        <exclude-pattern>public/index.php</exclude-pattern>
+        <exclude-pattern>scripts/*</exclude-pattern>
+        <exclude-pattern>src/MPDHandler.php</exclude-pattern>
+    </rule>
+
+    <!-- Paths to check -->
+    <file>public</file>
+    <file>src</file>
+    <file>scripts</file>
+    <file>routes</file>
+</ruleset>

@@ -1,0 +1,56 @@
+name: Build and Publish Release Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-and-publish-release-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Update npm
+        run: npm install npm --global
+
+      - name: Install client dependencies
+        run: npm install --omit=dev
+        working-directory: ./client
+
+      - name: Build client
+        run: DISABLE_ESLINT_PLUGIN=true npm run build
+        working-directory: ./client
+
+      - name: Create dist directory structure
+        run: |
+          mkdir -p dist/public
+          mkdir -p dist/views
+
+      - name: Include server into dist
+        run: cp -r server/* dist/
+
+      - name: Include built client into dist
+        run: |
+          cp -r client/dist/* dist/public/
+          cp dist/public/index.html dist/views/
+
+      - name: Include documentation files
+        run: cp README.md dist/ 2>/dev/null || true
+
+      - name: Create release package
+        run: |
+          mv dist audinary
+          zip -r audinary-prebuild.zip audinary
+
+      - name: Publish release package
+        run: gh release upload ${{ github.event.release.tag_name }} audinary-prebuild.zip
+        env:
+          GH_TOKEN: ${{ github.token }}

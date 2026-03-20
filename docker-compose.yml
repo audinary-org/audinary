@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  audinary:
+    restart: unless-stopped
+    image: ghcr.io/audinary-org/audinary:latest
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    environment:
+      - DB_DRIVER=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-audinary}
+      - DB_USER=${DB_USER:-audinary}
+      - DB_PASSWORD=${DB_PASSWORD:-audinary}
+    volumes:
+      - config:/var/www/html/config
+      - cache:/var/www/html/var/cache
+      - logs:/var/www/html/var/logs
+      - img:/var/www/html/public/img/userdata
+      - backups:/var/www/html/var/backups
+      - music:/var/www/html/var/music:ro
+
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${DB_NAME:-audinary}
+      - POSTGRES_USER=${DB_USER:-audinary}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-audinary}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  config:
+  cache:
+  logs:
+  img:
+  pgdata:
+  music:

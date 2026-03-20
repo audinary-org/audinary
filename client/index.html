@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <!-- Enhanced viewport for mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Audinary - Hungry for Music</title>
+    
+    <!-- Favicon and Apple Touch Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Audinary - Hungry for Music">
+    <meta name="keywords" content="musik, streaming, player, vue, javascript">
+    <meta name="author" content="Daniel Hiller & contributors">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Audinary">
+    <meta property="og:description" content="Hungry for Music">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/">
+    <meta property="og:image" content="/img/apple-touch-icon.png">
+    
+    <!-- Enhanced PWA Meta Tags -->
+    <meta name="theme-color" content="#243B55">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Audinary">
+    <meta name="application-name" content="Audinary">
+    <meta name="msapplication-TileColor" content="#243B55">
+    <meta name="msapplication-TileImage" content="/img/mstile-144x144.png">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Additional iOS PWA Meta Tags -->
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Disable automatic detection and formatting of possible phone numbers -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    
+    <!-- Splash screen images for different iOS devices -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/img/splash-iphone14promax-portrait.png">
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/img/splash-iphone14pro-portrait.png">
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/img/splash-iphonex-portrait.png">
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/img/splash-iphone11-portrait.png">
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/img/splash-iphone8-portrait.png">
+    
+    <!-- Disable zoom on input focus (iOS) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <style>
+        /* CSS Variables for safe areas */
+        :root {
+            --safe-area-inset-top: env(safe-area-inset-top);
+            --safe-area-inset-right: env(safe-area-inset-right);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+            --safe-area-inset-left: env(safe-area-inset-left);
+        }
+        
+        /* Critical CSS for initial load */
+        * {
+            box-sizing: border-box;
+        }
+        
+        html {
+            /* Prevent text size adjustment on orientation change */
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            /* Smooth scrolling */
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(to right, #243B55, #141E30);
+            color: white;
+            overflow: hidden;
+            /* Prevent bounce scrolling on iOS */
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            /* Prevent text selection and highlighting */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            /* Disable pull-to-refresh */
+            overscroll-behavior-y: contain;
+        }
+        
+        #app {
+            /* Use dynamic viewport height for mobile browsers */
+            height: 100dvh;
+            min-height: 100svh; /* Fallback for older browsers */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            width: 100%;
+            /* Support for safe areas - only for the app content */
+            padding-top: var(--safe-area-inset-top);
+            padding-right: var(--safe-area-inset-right);
+            padding-bottom: var(--safe-area-inset-bottom);
+            padding-left: var(--safe-area-inset-left);
+        }
+        
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Use dynamic viewport height */
+            height: 100dvh;
+            min-height: 100svh;
+            background: linear-gradient(to right, #243B55, #141E30);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+            /* Support for safe areas */
+            padding-top: var(--safe-area-inset-top);
+            padding-right: var(--safe-area-inset-right);
+            padding-bottom: var(--safe-area-inset-bottom);
+            padding-left: var(--safe-area-inset-left);
+        }
+        
+        .loading-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-logo {
+            font-size: clamp(2rem, 8vw, 3rem);
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .loading-logo-img {
+            max-width: min(250px, 50vw);
+            max-height: min(250px, 50vw);
+            width: auto;
+            height: auto;
+            border-radius: 12px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+        
+        .loading-logo-fallback {
+            font-size: clamp(2rem, 8vw, 3rem);
+        }
+        
+        .loading-text {
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            margin-bottom: 2rem;
+            opacity: 0.8;
+            text-align: center;
+            padding: 0 1rem;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Error screen */
+        .error-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Use dynamic viewport height */
+            height: 100dvh;
+            min-height: 100svh;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9998;
+            text-align: center;
+            padding: 2rem;
+            /* Support for safe areas */
+            padding-top: calc(2rem + var(--safe-area-inset-top));
+            padding-right: calc(2rem + var(--safe-area-inset-right));
+            padding-bottom: calc(2rem + var(--safe-area-inset-bottom));
+            padding-left: calc(2rem + var(--safe-area-inset-left));
+        }
+        
+        .error-icon {
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            margin-bottom: 1rem;
+        }
+        
+        .error-title {
+            font-size: clamp(1.5rem, 6vw, 2rem);
+            margin-bottom: 1rem;
+        }
+        
+        .error-message {
+            font-size: clamp(1rem, 4vw, 1.1rem);
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+        
+        .retry-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            /* Improve touch targets for mobile */
+            min-height: 44px;
+            min-width: 44px;
+            touch-action: manipulation;
+        }
+        
+        .retry-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .retry-button:active {
+            transform: translateY(0);
+        }
+        
+        /* Media queries for specific devices */
+        
+        /* iPhone X/11/12/13/14 and similar with notch */
+        @supports (padding: max(0px)) {
+            body {
+                padding-top: max(var(--safe-area-inset-top), 0px);
+                padding-right: max(var(--safe-area-inset-right), 0px);
+                padding-bottom: max(var(--safe-area-inset-bottom), 0px);
+                padding-left: max(var(--safe-area-inset-left), 0px);
+            }
+        }
+        
+        /* Landscape orientation adjustments */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            .loading-logo,
+            .loading-text {
+                margin-bottom: 1rem;
+            }
+            
+            .error-screen {
+                padding: 1rem;
+                padding-top: calc(1rem + var(--safe-area-inset-top));
+                padding-bottom: calc(1rem + var(--safe-area-inset-bottom));
+            }
+        }
+        
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .loading-logo-img {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            /* Already using dark theme, but we can add specific adjustments here */
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .loading-spinner {
+                animation: none;
+                border-top-color: transparent;
+            }
+        }
+        
+        /* Focus styles for accessibility */
+        .retry-button:focus {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+        
+        /* Prevent iOS zoom on input focus */
+        input, textarea, select {
+            font-size: 16px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-logo">
+            <img 
+                src="/img/audinary-orange-orange-transparent.png" 
+                alt="Audinary Logo" 
+                class="loading-logo-img"
+                onerror="this.style.display='none'; document.querySelector('.loading-logo-fallback').style.display='block';"
+                onload="document.querySelector('.loading-logo-fallback').style.display='none';"
+            >
+            <i class="bi bi-music-note-beamed loading-logo-fallback" style="display: none;"></i>
+        </div>
+        <div class="loading-text" data-i18n="loading.text">Audinary is loading...</div>
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Error Screen (hidden by default) -->
+    <div id="error-screen" class="error-screen" style="display: none;">
+        <div class="error-icon">
+            <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <div class="error-title" data-i18n="error.title">Loading Error</div>
+        <div class="error-message" data-i18n="error.message">
+            Audinary could not be loaded. Please check your internet connection and try again.
+        </div>
+        <button class="retry-button" onclick="location.reload()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            <span data-i18n="error.retry">Try Again</span>
+        </button>
+    </div>
+    
+    <!-- Vue App Mount Point -->
+    <div id="app"></div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Simple i18n system for loading screen
+        const translations = {
+            de: {
+                'loading.text': 'Audinary wird geladen...',
+                'error.title': 'Fehler beim Laden',
+                'error.message': 'Audinary konnte nicht geladen werden. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.',
+                'error.retry': 'Erneut versuchen'
+            },
+            en: {
+                'loading.text': 'Loading Audinary...',
+                'error.title': 'Loading Error',
+                'error.message': 'Audinary could not be loaded. Please check your internet connection and try again.',
+                'error.retry': 'Try Again'
+            },
+            fr: {
+                'loading.text': 'Chargement de Audinary...',
+                'error.title': 'Erreur de chargement',
+                'error.message': 'Audinary n\'a pas pu être chargé. Veuillez vérifier votre connexion internet et réessayer.',
+                'error.retry': 'Réessayer'
+            }
+        };
+
+        // Detect browser language
+        function detectLanguage() {
+            const browserLang = navigator.language || navigator.languages[0] || 'en';
+            const langCode = browserLang.split('-')[0]; // Get base language (e.g., 'de' from 'de-DE')
+            return translations[langCode] ? langCode : 'en'; // Default to English
+        }
+
+        // Apply translations
+        function applyTranslations() {
+            const lang = detectLanguage();
+            const langTranslations = translations[lang];
+            
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (langTranslations[key]) {
+                    element.textContent = langTranslations[key];
+                }
+            });
+        }
+
+        // Apply translations when page loads
+        document.addEventListener('DOMContentLoaded', applyTranslations);
+
+        // Service Worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                    })
+                    .catch(registrationError => {
+                        console.error('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+        
+        // Global error handling
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+            showErrorScreen();
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            showErrorScreen();
+        });
+        
+        function showErrorScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const errorScreen = document.getElementById('error-screen');
+            
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+            
+            if (errorScreen) {
+                errorScreen.style.display = 'flex';
+            }
+        }
+        
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('fade-out');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }
+        }
+        
+        // Hide loading screen when Vue app is ready
+        window.addEventListener('vue-app-ready', hideLoadingScreen);
+        
+        // Fallback: Show error screen if Vue app doesn't load within 10 seconds
+        setTimeout(() => {
+            if (document.getElementById('loading-screen').style.display !== 'none') {
+                showErrorScreen();
+            }
+        }, 10000);
+    </script>
+    
+    <!-- Vue.js Application -->
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html> 

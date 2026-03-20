@@ -1,0 +1,13 @@
+parameters:
+  level: 7
+  paths:
+    - public
+    - src
+    - scripts
+    - routes
+  excludePaths:
+    - migrations/*.sql
+    - var/*
+    - vendor/*
+    - templates/*
+

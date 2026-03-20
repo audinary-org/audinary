@@ -1,0 +1,25 @@
+version: '3.8'
+
+# Development environment - only runs PostgreSQL
+# Frontend and backend run locally via: npm run dev
+
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${DB_NAME:-audinary}
+      - POSTGRES_USER=${DB_USER:-audinary}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-audinary}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

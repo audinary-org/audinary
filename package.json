@@ -1,0 +1,57 @@
+{
+  "name": "audinary",
+  "version": "1.0.0",
+  "license": "AGPL-3.0",
+  "author": "Daniel Hiller & contributors",
+  "homepage": "https://audinary.org",
+  "description": "Audinary - Hungry for music",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && composer start",
+    "build": "npm run build:client",
+    "build:client": "cd client && npm run build",
+    "install:all": "npm install && cd client && npm install && cd ../server && composer install",
+    "clean": "rm -rf client/node_modules client/dist server/vendor",
+    "lint": "cd client && npm run lint",
+    "test": "npm run test:client && npm run test:server",
+    "test:client": "cd client && npm run test",
+    "test:server": "cd server && composer test",
+    "version:sync": "node scripts/sync-version.js",
+    "version:bump": "node scripts/version-bump.js",
+    "version:bump:major": "node scripts/version-bump.js major",
+    "version:bump:minor": "node scripts/version-bump.js minor",
+    "version:bump:patch": "node scripts/version-bump.js patch",
+    "version": "npm run version:sync && git add -A"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "eslint": "^9.37.0",
+    "vite": "^7.1.10",
+    "vue-tsc": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "php": ">=8.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/audinary-org/audinary.git"
+  },
+  "keywords": [
+    "music",
+    "streaming",
+    "vue",
+    "php",
+    "spa"
+  ],
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "vue-router": "^4.6.0"
+  }
+}

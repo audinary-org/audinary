@@ -1,0 +1,23 @@
+.idea/
+.vscode/
+node_modules
+client/node_modules
+client/dist
+client/public/img/userdata/*/*.webp
+
+
+server/var/cache/*
+server/var/logs/*
+server/var/music/*
+server/var/config/config.php
+server/composer.lock
+server/vendor
+server/var/backups/*
+client/translation_report.json
+server/var/database/*
+backend/*
+
+# Build/dev helper scripts and source assets
+client/generate-icons.sh
+client/generate-splash-screens.sh
+sources/
