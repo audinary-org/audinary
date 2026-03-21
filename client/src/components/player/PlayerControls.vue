@@ -207,14 +207,14 @@
             class="w-8 h-8 rounded-full border border-white/30 text-white hover:bg-white/20 flex items-center justify-center transition-colors mr-2 relative"
             :class="showQueue ? 'bg-white/20 border-white/40' : ''"
             @click="toggleQueue"
-            :title="`${$t('player.queue.title')} (${playerStore.upcomingQueue.length})`"
+            :title="`${$t('player.queue.title')} (${playerStore.upcomingQueueLength})`"
           >
             <i class="bi bi-list-ul"></i>
             <span
-              v-if="playerStore.upcomingQueue.length > 0"
+              v-if="playerStore.upcomingQueueLength > 0"
               class="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center"
             >
-              {{ playerStore.upcomingQueue.length }}
+              {{ playerStore.upcomingQueueLength }}
             </span>
           </button>
 
@@ -238,7 +238,7 @@
           <h5 class="text-lg font-medium text-white mb-0">
             <i class="bi bi-list-ul mr-2"></i>
             {{ $t("player.queue.title") }} ({{
-              playerStore.upcomingQueue.length
+              playerStore.upcomingQueueLength
             }})
           </h5>
           <button
@@ -251,7 +251,7 @@
 
         <div class="queue-list">
           <div
-            v-if="playerStore.upcomingQueue.length === 0"
+            v-if="playerStore.upcomingQueueLength === 0"
             class="text-center text-gray-500 py-4"
           >
             <i class="bi bi-music-note text-6xl mb-3"></i>
@@ -298,7 +298,7 @@
         </div>
 
         <div
-          v-if="playerStore.upcomingQueue.length > 0"
+          v-if="playerStore.upcomingQueueLength > 0"
           class="queue-actions mt-3"
         >
           <button

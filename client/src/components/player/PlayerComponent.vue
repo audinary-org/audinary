@@ -284,17 +284,17 @@
           </div>
         </div>
 
-        <div v-if="playerStore.upcomingQueue.length > 0" class="space-y-4">
+        <div v-if="playerStore.upcomingQueueLength > 0" class="space-y-4">
           <h6
             class="text-sm font-semibold uppercase tracking-wider text-gray-300 px-1"
           >
             {{ $t("player.queue.upNext") }} ({{
-              playerStore.upcomingQueue.length
+              playerStore.upcomingQueueLength
             }})
           </h6>
           <div class="space-y-2">
             <div
-              v-for="(song, index) in playerStore.upcomingQueue.slice(0, 5)"
+              v-for="(song, index) in playerStore.upcomingQueuePreview"
               :key="song.id + '-' + index"
               class="flex items-center p-3 bg-white/5 rounded-xl border border-white/10 cursor-pointer active:scale-[0.98] transition-all duration-200 active:bg-white/10"
               @click="playFromQueue(index)"
@@ -396,7 +396,7 @@
 
         <div
           v-if="
-            playerStore.upcomingQueue.length === 0 &&
+            playerStore.upcomingQueueLength === 0 &&
             playerStore.previousQueue.length === 0
           "
           class="flex flex-col items-center justify-center text-center py-20"
@@ -871,10 +871,10 @@
             >
               <i class="bi bi-list text-list text-base"></i>
               <span
-                v-if="playerStore.upcomingQueue.length > 0"
+                v-if="playerStore.upcomingQueueLength > 0"
                 class="absolute -top-1 -right-1 bg-blue-600 text-[10px] text-white rounded-full w-4 h-4 flex items-center justify-center font-medium"
               >
-                {{ playerStore.upcomingQueue.length }}
+                {{ playerStore.upcomingQueueLength }}
               </span>
             </button>
             <button
@@ -1214,10 +1214,10 @@
                 >
                   <i class="bi bi-list text-list text-base"></i>
                   <span
-                    v-if="playerStore.upcomingQueue.length > 0"
+                    v-if="playerStore.upcomingQueueLength > 0"
                     class="absolute -top-1 -right-1 bg-blue-600 text-[10px] text-white rounded-full w-4 h-4 flex items-center justify-center font-medium"
                   >
-                    {{ playerStore.upcomingQueue.length }}
+                    {{ playerStore.upcomingQueueLength }}
                   </span>
                 </button>
                 <button
@@ -1406,7 +1406,7 @@ function checkIfMobile() {
 
 function togglePlayPause() {
   // If no song is currently playing but there are songs in the queue, start the first one
-  if (!currentSong.value && playerStore.upcomingQueue.length > 0) {
+  if (!currentSong.value && playerStore.upcomingQueueLength > 0) {
     playerStore.playFromQueue(0);
   } else {
     playerStore.togglePlayPause();

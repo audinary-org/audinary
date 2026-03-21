@@ -97,7 +97,28 @@ export const usePlayerStore = defineStore("player", {
   getters: {
     hasQueue: (state) => state.actualPlayQueue.length > 0,
 
+    // Length of upcoming queue — cheap, no array allocation
+    upcomingQueueLength: (state) => {
+      if (
+        state.currentSongIndexInActualPlayQueue === -1 ||
+        state.actualPlayQueue.length === 0
+      ) {
+        return state.actualPlayQueue.length;
+      }
+      return state.actualPlayQueue.length - state.currentSongIndexInActualPlayQueue - 1;
+    },
+
+    // First 5 upcoming songs — use for previews without allocating the full array
+    upcomingQueuePreview: (state) => {
+      const start = state.currentSongIndexInActualPlayQueue === -1
+        ? 0
+        : state.currentSongIndexInActualPlayQueue + 1;
+      return state.actualPlayQueue.slice(start, start + 5);
+    },
+
     // Nur die kommenden Songs in der Queue (ohne den aktuell spielenden)
+    // IMPORTANT: Only use when you actually need the full array (queue modal, reordering).
+    // For length checks use upcomingQueueLength, for previews use upcomingQueuePreview.
     upcomingQueue: (state) => {
       if (
         state.currentSongIndexInActualPlayQueue === -1 ||
