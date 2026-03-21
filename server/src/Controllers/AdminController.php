@@ -1484,7 +1484,9 @@ final class AdminController
         }
 
         try {
-            $playlistRepo = new PlaylistRepository();
+            $authToken = $request->getAttribute('auth_token');
+            $userId = $authToken->getUserId();
+            $playlistRepo = new PlaylistRepository($userId);
             $smartRepo = new SmartPlaylistRepository();
             $playlists = $playlistRepo->findAllSmartAdmin();
 
@@ -1493,7 +1495,7 @@ final class AdminController
                 $data = $playlist->toArray();
                 $rules = $playlist->getRules();
                 if (is_array($rules) && !empty($rules['conditions'])) {
-                    $stats = $smartRepo->getSmartPlaylistStats($rules, null, $playlist->getSmartLimit());
+                    $stats = $smartRepo->getSmartPlaylistStats($rules, $userId, $playlist->getSmartLimit());
                     $data['song_count'] = $stats['song_count'];
                     $data['duration'] = $stats['duration'];
                 }
@@ -1618,9 +1620,11 @@ final class AdminController
                 return $this->createJsonResponse($response, ['error' => 'Rules are required'], 400);
             }
 
+            $authToken = $request->getAttribute('auth_token');
+            $userId = $authToken->getUserId();
             $smartRepo = new SmartPlaylistRepository();
             $previewLimit = isset($data['smart_limit']) && $data['smart_limit'] > 0 ? (int) $data['smart_limit'] : null;
-            $stats = $smartRepo->getSmartPlaylistStats($data['rules'], null, $previewLimit);
+            $stats = $smartRepo->getSmartPlaylistStats($data['rules'], $userId, $previewLimit);
 
             return $this->createJsonResponse($response, [
                 'success' => true,

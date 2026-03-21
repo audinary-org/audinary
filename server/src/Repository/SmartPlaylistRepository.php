@@ -52,7 +52,7 @@ final class SmartPlaylistRepository
                 s.last_mtime,
                 s.is_deleted,
                 s.created_at,
-                s.last_played as \"lastPlayed\",
+                ph.last_played_at as \"lastPlayed\",
                 s.filetype,
                 a.album_id,
                 a.album_name as album,
@@ -68,6 +68,12 @@ final class SmartPlaylistRepository
             LEFT JOIN favorites f ON s.song_id = f.song_id
                 AND f.favorite_type = 'song'
                 AND f.user_id = :fav_user_id
+            LEFT JOIN (
+                SELECT song_id, MAX(played_at) as last_played_at
+                FROM play_history
+                WHERE user_id = :ph_user_id
+                GROUP BY song_id
+            ) ph ON ph.song_id = s.song_id
             WHERE s.is_deleted = 0 AND a.is_deleted = 0
             {$whereClause}
             {$orderClause}
@@ -75,6 +81,7 @@ final class SmartPlaylistRepository
         ";
 
         $bindParams[':fav_user_id'] = $userId;
+        $bindParams[':ph_user_id'] = $userId;
 
         $stmt = $this->db->prepare($sql);
 
@@ -121,6 +128,12 @@ final class SmartPlaylistRepository
                 LEFT JOIN favorites f ON s.song_id = f.song_id
                     AND f.favorite_type = 'song'
                     AND f.user_id = :fav_user_id
+                LEFT JOIN (
+                    SELECT song_id, MAX(played_at) as last_played_at
+                    FROM play_history
+                    WHERE user_id = :ph_user_id
+                    GROUP BY song_id
+                ) ph ON ph.song_id = s.song_id
                 WHERE s.is_deleted = 0 AND a.is_deleted = 0
                 {$whereClause}
                 LIMIT :stats_limit
@@ -128,6 +141,7 @@ final class SmartPlaylistRepository
         ";
 
         $bindParams[':fav_user_id'] = $userId;
+        $bindParams[':ph_user_id'] = $userId;
 
         $stmt = $this->db->prepare($sql);
 
@@ -196,6 +210,7 @@ final class SmartPlaylistRepository
             'artist' => $this->buildArtistCondition($operator, $value, $index, $bindParams),
             'is_favorite' => $this->buildFavoriteCondition($index, $bindParams),
             'last_played' => $this->buildLastPlayedCondition($operator, $value, $index, $bindParams),
+            'recently_added' => $this->buildRecentlyAddedCondition($operator, $value, $index, $bindParams),
             'duration' => $this->buildDurationCondition($operator, $value, $index, $bindParams),
             default => null,
         };
@@ -289,6 +304,20 @@ final class SmartPlaylistRepository
     /**
      * @param array<string, mixed> &$bindParams
      */
+    private function buildRecentlyAddedCondition(string $operator, mixed $value, int $index, array &$bindParams): ?string
+    {
+        if ($operator === 'within_days') {
+            $days = (int) $value;
+            if ($days <= 0) {
+                return null;
+            }
+            return "(s.created_at >= NOW() - INTERVAL '{$days} days')";
+        }
+
+        return null;
+    }
+
+    /** @param array<string, mixed> &$bindParams */
     private function buildLastPlayedCondition(string $operator, mixed $value, int $index, array &$bindParams): ?string
     {
         if ($operator === 'within_days') {
@@ -296,13 +325,12 @@ final class SmartPlaylistRepository
             if ($days <= 0) {
                 return null;
             }
-            $param = ":last_played_{$index}";
-            $bindParams[$param] = $days;
-            return "s.last_played >= NOW() - MAKE_INTERVAL(days => {$param})";
+            // Uses play_history subquery (aliased as ph) for per-user play tracking
+            return "(ph.last_played_at IS NOT NULL AND ph.last_played_at >= NOW() - INTERVAL '{$days} days')";
         }
 
         if ($operator === 'never') {
-            return "s.last_played IS NULL";
+            return "(ph.last_played_at IS NULL)";
         }
 
         return null;
@@ -359,7 +387,7 @@ final class SmartPlaylistRepository
             'year' => " ORDER BY s.year {$dir}, s.artist ASC, a.album_name ASC",
             'album' => " ORDER BY a.album_name {$dir}, s.disc_number ASC, s.track_number ASC",
             'added' => " ORDER BY s.created_at {$dir}",
-            'last_played' => " ORDER BY s.last_played {$dir} NULLS LAST",
+            'last_played' => " ORDER BY ph.last_played_at {$dir} NULLS LAST",
             'duration' => " ORDER BY s.duration {$dir}",
             'random' => " ORDER BY RANDOM()",
             default => " ORDER BY s.artist ASC, a.album_name ASC, s.disc_number ASC, s.track_number ASC",

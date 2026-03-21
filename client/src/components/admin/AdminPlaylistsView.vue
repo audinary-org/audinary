@@ -4,10 +4,10 @@
     <div class="flex items-center justify-between mb-4">
       <div>
         <h3 class="text-white mb-1">
-          <i class="bi bi-lightning-charge mr-2"></i>Smart Playlists
+          <i class="bi bi-lightning-charge mr-2"></i>{{ $t('admin.smartPlaylist.title') }}
         </h3>
         <p class="text-gray-400 mb-0">
-          Automatische Playlists basierend auf Regeln erstellen und verwalten
+          {{ $t('admin.smartPlaylist.subtitle') }}
         </p>
       </div>
       <button
@@ -16,7 +16,7 @@
         @click="openCreateForm"
       >
         <i class="bi bi-plus-lg"></i>
-        Neue Smart Playlist
+        {{ $t('admin.smartPlaylist.new') }}
       </button>
     </div>
 
@@ -28,7 +28,7 @@
       <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
         <h5 class="mb-0">
           <i class="bi bi-lightning-charge mr-2"></i>
-          {{ editingId ? 'Smart Playlist bearbeiten' : 'Neue Smart Playlist' }}
+          {{ editingId ? $t('admin.smartPlaylist.edit') : $t('admin.smartPlaylist.new') }}
         </h5>
         <button
           class="text-gray-400 hover:text-white transition-colors"
@@ -40,44 +40,44 @@
       <div class="p-4">
         <!-- Name -->
         <div class="mb-4">
-          <label class="block text-sm text-gray-300 mb-2">Name</label>
+          <label class="block text-sm text-gray-300 mb-2">{{ $t('admin.smartPlaylist.name') }}</label>
           <input
             type="text"
             class="bg-white/10 text-white border border-white/20 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
             v-model="form.name"
-            placeholder="z.B. Rock der 80er, Neue Songs, Favoriten..."
+            :placeholder="$t('admin.smartPlaylist.namePlaceholder')"
           />
         </div>
 
         <!-- Description -->
         <div class="mb-4">
-          <label class="block text-sm text-gray-300 mb-2">Beschreibung (optional)</label>
+          <label class="block text-sm text-gray-300 mb-2">{{ $t('admin.smartPlaylist.description') }}</label>
           <input
             type="text"
             class="bg-white/10 text-white border border-white/20 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
             v-model="form.description"
-            placeholder="Optionale Beschreibung..."
+            :placeholder="$t('admin.smartPlaylist.descriptionPlaceholder')"
           />
         </div>
 
         <!-- Match Type -->
         <div class="mb-4">
-          <label class="block text-sm text-gray-300 mb-2">Verknüpfung</label>
+          <label class="block text-sm text-gray-300 mb-2">{{ $t('admin.smartPlaylist.matchType') }}</label>
           <div class="flex gap-4">
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="radio" v-model="form.match" value="all" class="form-radio text-audinary" />
-              <span class="text-white">Alle Regeln müssen zutreffen (UND)</span>
+              <span class="text-white">{{ $t('admin.smartPlaylist.matchAll') }}</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="radio" v-model="form.match" value="any" class="form-radio text-audinary" />
-              <span class="text-white">Eine Regel muss zutreffen (ODER)</span>
+              <span class="text-white">{{ $t('admin.smartPlaylist.matchAny') }}</span>
             </label>
           </div>
         </div>
 
         <!-- Rules -->
         <div class="mb-4">
-          <label class="block text-sm text-gray-300 mb-2">Regeln</label>
+          <label class="block text-sm text-gray-300 mb-2">{{ $t('admin.smartPlaylist.rules') }}</label>
           <div class="space-y-2">
             <div
               v-for="(rule, index) in form.conditions"
@@ -90,13 +90,9 @@
                 class="text-sm min-w-[130px]"
                 @change="onFieldChange(index)"
               >
-                <option value="genre">Genre</option>
-                <option value="year">Jahr</option>
-                <option value="decade">Jahrzehnt</option>
-                <option value="artist">Künstler</option>
-                <option value="is_favorite">Favoriten</option>
-                <option value="last_played">Zuletzt gespielt</option>
-                <option value="duration">Dauer</option>
+                <option v-for="f in fieldOptions" :key="f.value" :value="f.value">
+                  {{ $t('admin.smartPlaylist.fields.' + f.value) }}
+                </option>
               </select>
 
               <!-- Operator -->
@@ -110,7 +106,7 @@
                   :key="op.value"
                   :value="op.value"
                 >
-                  {{ op.label }}
+                  {{ $t('admin.smartPlaylist.operators.' + op.value) }}
                 </option>
               </select>
 
@@ -120,7 +116,7 @@
                   v-model="rule.value"
                   class="text-sm flex-1"
                 >
-                  <option value="" disabled>Genre wählen...</option>
+                  <option value="" disabled>{{ $t('admin.smartPlaylist.values.selectGenre') }}</option>
                   <option v-for="g in genres" :key="g.name" :value="g.name">
                     {{ g.name }} ({{ g.track_count }})
                   </option>
@@ -132,9 +128,9 @@
                   v-model="rule.value"
                   class="text-sm flex-1"
                 >
-                  <option value="" disabled>Jahrzehnt wählen...</option>
+                  <option value="" disabled>{{ $t('admin.smartPlaylist.values.selectDecade') }}</option>
                   <option v-for="d in decades" :key="d.start_year" :value="d.start_year">
-                    {{ d.decade }} ({{ d.album_count }} Alben)
+                    {{ d.decade }} ({{ d.album_count }} {{ $t('admin.smartPlaylist.values.albums') }})
                   </option>
                 </select>
               </template>
@@ -144,14 +140,14 @@
                   type="number"
                   v-model.number="rule.value[0]"
                   class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-24"
-                  placeholder="Von"
+                  :placeholder="$t('admin.smartPlaylist.values.from')"
                 />
-                <span class="text-gray-400">bis</span>
+                <span class="text-gray-400">–</span>
                 <input
                   type="number"
                   v-model.number="rule.value[1]"
                   class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-24"
-                  placeholder="Bis"
+                  :placeholder="$t('admin.smartPlaylist.values.to')"
                 />
               </template>
 
@@ -160,7 +156,7 @@
                   type="number"
                   v-model.number="rule.value"
                   class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm flex-1"
-                  placeholder="z.B. 1990"
+                  :placeholder="$t('admin.smartPlaylist.values.yearPlaceholder')"
                 />
               </template>
 
@@ -169,15 +165,27 @@
                   type="text"
                   v-model="rule.value"
                   class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm flex-1"
-                  placeholder="Künstlername..."
+                  :placeholder="$t('admin.smartPlaylist.values.artistPlaceholder')"
                 />
               </template>
 
               <template v-else-if="rule.field === 'is_favorite'">
-                <span class="text-audinary text-sm">Nur Favoriten</span>
+                <span class="text-audinary text-sm">{{ $t('admin.smartPlaylist.values.onlyFavorites') }}</span>
               </template>
 
               <template v-else-if="rule.field === 'last_played'">
+                <input
+                  v-if="rule.operator !== 'never'"
+                  type="number"
+                  v-model.number="rule.value"
+                  class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-24"
+                  placeholder="30"
+                  min="1"
+                />
+                <span v-if="rule.operator !== 'never'" class="text-gray-400 text-sm">{{ $t('admin.smartPlaylist.values.days') }}</span>
+              </template>
+
+              <template v-else-if="rule.field === 'recently_added'">
                 <input
                   type="number"
                   v-model.number="rule.value"
@@ -185,7 +193,7 @@
                   placeholder="30"
                   min="1"
                 />
-                <span class="text-gray-400 text-sm">Tage</span>
+                <span class="text-gray-400 text-sm">{{ $t('admin.smartPlaylist.values.days') }}</span>
               </template>
 
               <template v-else-if="rule.field === 'duration'">
@@ -196,7 +204,7 @@
                   placeholder="300"
                   min="1"
                 />
-                <span class="text-gray-400 text-sm">Sekunden</span>
+                <span class="text-gray-400 text-sm">{{ $t('admin.smartPlaylist.values.seconds') }}</span>
               </template>
 
               <!-- Remove Rule Button -->
@@ -215,41 +223,36 @@
             @click="addRule"
           >
             <i class="bi bi-plus-circle"></i>
-            Regel hinzufügen
+            {{ $t('admin.smartPlaylist.addRule') }}
           </button>
         </div>
 
         <!-- Sort & Limit -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <label class="block text-sm text-gray-300 mb-2">Sortierung</label>
+            <label class="block text-sm text-gray-300 mb-2">{{ $t('admin.smartPlaylist.sorting') }}</label>
             <select
               v-model="form.smart_sort_by"
               class="text-sm w-full"
             >
-              <option value="">Standard (Künstler/Album)</option>
-              <option value="title">Titel</option>
-              <option value="artist">Künstler</option>
-              <option value="album">Album</option>
-              <option value="year">Jahr</option>
-              <option value="added">Hinzugefügt</option>
-              <option value="last_played">Zuletzt gespielt</option>
-              <option value="duration">Dauer</option>
-              <option value="random">Zufällig</option>
+              <option value="">{{ $t('admin.smartPlaylist.sortDefault') }}</option>
+              <option v-for="s in sortOptions" :key="s" :value="s">
+                {{ $t('admin.smartPlaylist.fields.' + s) }}
+              </option>
             </select>
           </div>
           <div>
-            <label class="block text-sm text-gray-300 mb-2">Richtung</label>
+            <label class="block text-sm text-gray-300 mb-2">{{ $t('admin.smartPlaylist.sortDirection') }}</label>
             <select
               v-model="form.smart_sort_direction"
               class="text-sm w-full"
             >
-              <option value="asc">Aufsteigend</option>
-              <option value="desc">Absteigend</option>
+              <option value="asc">{{ $t('common.ascending') }}</option>
+              <option value="desc">{{ $t('common.descending') }}</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm text-gray-300 mb-2">Max. Songs (max. 250)</label>
+            <label class="block text-sm text-gray-300 mb-2">{{ $t('admin.smartPlaylist.maxSongs') }}</label>
             <input
               type="number"
               v-model.number="form.smart_limit"
@@ -267,9 +270,9 @@
           class="mb-4 bg-white/5 border border-white/10 rounded p-3 text-sm"
         >
           <i class="bi bi-eye mr-1 text-audinary"></i>
-          <span class="text-white">Vorschau:</span>
+          <span class="text-white">{{ $t('admin.smartPlaylist.previewLabel') }}</span>
           <span class="text-audinary font-semibold ml-1">{{ previewStats.song_count }}</span>
-          <span class="text-gray-400"> Songs</span>
+          <span class="text-gray-400"> {{ $t('common.songs') }}</span>
           <span class="text-gray-400 ml-2">({{ formatDuration(previewStats.duration) }})</span>
         </div>
 
@@ -281,7 +284,7 @@
             :disabled="!canSave || isSaving"
           >
             <span v-if="isSaving" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
-            {{ editingId ? 'Speichern' : 'Erstellen' }}
+            {{ editingId ? $t('admin.smartPlaylist.save') : $t('admin.smartPlaylist.create') }}
           </button>
           <button
             class="px-4 py-2 text-sm text-audinary hover:bg-white/10 rounded-lg transition-colors"
@@ -289,13 +292,13 @@
             :disabled="!hasValidRules"
           >
             <i class="bi bi-eye mr-1"></i>
-            Vorschau
+            {{ $t('admin.smartPlaylist.preview') }}
           </button>
           <button
             class="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             @click="closeForm"
           >
-            Abbrechen
+            {{ $t('admin.smartPlaylist.cancel') }}
           </button>
         </div>
       </div>
@@ -305,7 +308,7 @@
     <div v-if="!showForm" class="space-y-3">
       <div v-if="loading" class="text-center py-8">
         <div class="w-8 h-8 border-4 border-t-transparent border-audinary rounded-full animate-spin mx-auto"></div>
-        <p class="mt-3 text-gray-400">Lade Smart Playlists...</p>
+        <p class="mt-3 text-gray-400">{{ $t('admin.smartPlaylist.loading') }}</p>
       </div>
 
       <div
@@ -313,16 +316,16 @@
         class="bg-white/5 border border-white/10 rounded-lg p-8 text-center"
       >
         <i class="bi bi-lightning-charge text-gray-500 text-6xl mb-3"></i>
-        <h4 class="text-white mb-2">Keine Smart Playlists</h4>
+        <h4 class="text-white mb-2">{{ $t('admin.smartPlaylist.noPlaylists') }}</h4>
         <p class="text-gray-400 mb-4">
-          Erstelle automatische Playlists basierend auf Genre, Jahr, Künstler und mehr.
+          {{ $t('admin.smartPlaylist.noPlaylistsDesc') }}
         </p>
         <button
           class="px-4 py-2 bg-audinary hover:bg-audinary/90 text-black rounded-lg transition-colors"
           @click="openCreateForm"
         >
           <i class="bi bi-plus-lg mr-1"></i>
-          Erste Smart Playlist erstellen
+          {{ $t('admin.smartPlaylist.createFirst') }}
         </button>
       </div>
 
@@ -344,7 +347,7 @@
             <div class="flex items-center gap-4 text-sm text-gray-400">
               <span>
                 <i class="bi bi-music-note mr-1"></i>
-                {{ playlist.song_count || 0 }} Songs
+                {{ playlist.song_count || 0 }} {{ $t('common.songs') }}
               </span>
               <span v-if="playlist.duration">
                 <i class="bi bi-clock mr-1"></i>
@@ -352,8 +355,9 @@
               </span>
               <span v-if="playlist.rules && playlist.rules.conditions">
                 <i class="bi bi-funnel mr-1"></i>
-                {{ playlist.rules.conditions.length }} {{ playlist.rules.conditions.length === 1 ? 'Regel' : 'Regeln' }}
-                ({{ playlist.rules.match === 'any' ? 'ODER' : 'UND' }})
+                {{ playlist.rules.conditions.length }}
+                {{ playlist.rules.conditions.length === 1 ? $t('admin.smartPlaylist.rules') : $t('admin.smartPlaylist.rules') }}
+                ({{ playlist.rules.match === 'any' ? $t('admin.smartPlaylist.summary.or') : $t('admin.smartPlaylist.summary.and') }})
               </span>
             </div>
             <!-- Rules Summary -->
@@ -371,14 +375,14 @@
             <button
               class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
               @click="editPlaylist(playlist)"
-              title="Bearbeiten"
+              :title="$t('common.edit')"
             >
               <i class="bi bi-pencil"></i>
             </button>
             <button
               class="p-2 text-gray-400 hover:text-red-400 hover:bg-white/10 rounded transition-colors"
               @click="confirmDelete(playlist)"
-              title="Löschen"
+              :title="$t('common.delete')"
             >
               <i class="bi bi-trash"></i>
             </button>
@@ -397,22 +401,22 @@
         class="w-full max-w-md bg-gray-900 border border-white/10 rounded-lg p-6"
         @click.stop
       >
-        <h5 class="text-white mb-3">Smart Playlist löschen?</h5>
+        <h5 class="text-white mb-3">{{ $t('admin.smartPlaylist.deleteConfirm') }}</h5>
         <p class="text-gray-400 mb-4">
-          "{{ playlistToDelete?.name }}" wird für alle Benutzer entfernt.
+          {{ $t('admin.smartPlaylist.deleteMessage', { name: playlistToDelete?.name }) }}
         </p>
         <div class="flex justify-end gap-3">
           <button
             class="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             @click="showDeleteConfirm = false"
           >
-            Abbrechen
+            {{ $t('admin.smartPlaylist.cancel') }}
           </button>
           <button
             class="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
             @click="deletePlaylist"
           >
-            Löschen
+            {{ $t('common.delete') }}
           </button>
         </div>
       </div>
@@ -422,10 +426,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { useAuthStore } from "@/stores/auth";
 import { useAlertStore } from "@/stores/alert";
 import { useApiStore } from "@/stores/api";
 
+const { t } = useI18n();
 const authStore = useAuthStore();
 const alertStore = useAlertStore();
 const apiStore = useApiStore();
@@ -441,6 +447,19 @@ const previewStats = ref(null);
 const showDeleteConfirm = ref(false);
 const playlistToDelete = ref(null);
 
+const fieldOptions = [
+  { value: "genre" },
+  { value: "year" },
+  { value: "decade" },
+  { value: "artist" },
+  { value: "is_favorite" },
+  { value: "last_played" },
+  { value: "recently_added" },
+  { value: "duration" },
+];
+
+const sortOptions = ["title", "artist", "album", "year", "added", "last_played", "duration", "random"];
+
 const defaultRule = () => ({ field: "genre", operator: "equals", value: "" });
 
 const form = ref({
@@ -454,44 +473,19 @@ const form = ref({
 });
 
 const operatorMap = {
-  genre: [
-    { value: "equals", label: "ist" },
-    { value: "contains", label: "enthält" },
-  ],
-  year: [
-    { value: "equals", label: "ist" },
-    { value: "between", label: "zwischen" },
-    { value: "greater_than", label: "größer als" },
-    { value: "less_than", label: "kleiner als" },
-  ],
-  decade: [{ value: "equals", label: "ist" }],
-  artist: [
-    { value: "contains", label: "enthält" },
-    { value: "equals", label: "ist" },
-  ],
-  is_favorite: [{ value: "equals", label: "ist" }],
-  last_played: [
-    { value: "within_days", label: "innerhalb der letzten" },
-    { value: "never", label: "nie gehört" },
-  ],
-  duration: [
-    { value: "less_than", label: "kürzer als" },
-    { value: "greater_than", label: "länger als" },
-  ],
-};
-
-const fieldLabels = {
-  genre: "Genre",
-  year: "Jahr",
-  decade: "Jahrzehnt",
-  artist: "Künstler",
-  is_favorite: "Favoriten",
-  last_played: "Zuletzt gespielt",
-  duration: "Dauer",
+  genre: ["equals", "contains"],
+  year: ["equals", "between", "greater_than", "less_than"],
+  decade: ["equals"],
+  artist: ["contains", "equals"],
+  is_favorite: ["equals"],
+  last_played: ["within_days", "never"],
+  recently_added: ["within_days"],
+  duration: ["less_than", "greater_than"],
 };
 
 function getOperators(field) {
-  return operatorMap[field] || [{ value: "equals", label: "ist" }];
+  const ops = operatorMap[field] || ["equals"];
+  return ops.map((value) => ({ value }));
 }
 
 function onFieldChange(index) {
@@ -543,20 +537,21 @@ function formatDuration(seconds) {
 }
 
 function formatCondition(cond) {
-  const field = fieldLabels[cond.field] || cond.field;
-  if (cond.field === "is_favorite") return "Nur Favoriten";
-  if (cond.field === "last_played" && cond.operator === "never") return "Nie gehört";
-  if (cond.field === "last_played") return `Gehört in ${cond.value} Tagen`;
+  const field = t('admin.smartPlaylist.fields.' + cond.field);
+  if (cond.field === "is_favorite") return t('admin.smartPlaylist.summary.onlyFavorites');
+  if (cond.field === "last_played" && cond.operator === "never") return t('admin.smartPlaylist.summary.neverPlayed');
+  if (cond.field === "last_played") return t('admin.smartPlaylist.summary.playedInDays', { days: cond.value });
+  if (cond.field === "recently_added") return t('admin.smartPlaylist.summary.addedInDays', { days: cond.value });
   if (cond.field === "decade") return `${cond.value}er`;
   if (cond.field === "year" && cond.operator === "between" && Array.isArray(cond.value)) {
     return `${cond.value[0]}–${cond.value[1]}`;
   }
   if (cond.field === "duration") {
     const op = cond.operator === "less_than" ? "<" : ">";
-    return `Dauer ${op} ${Math.floor(cond.value / 60)}min`;
+    return t('admin.smartPlaylist.summary.durationOp', { op, min: Math.floor(cond.value / 60) });
   }
-  const op = operatorMap[cond.field]?.find((o) => o.value === cond.operator);
-  return `${field} ${op?.label || cond.operator} "${cond.value}"`;
+  const op = t('admin.smartPlaylist.operators.' + cond.operator);
+  return `${field} ${op} "${cond.value}"`;
 }
 
 function openCreateForm() {
@@ -624,7 +619,7 @@ async function loadPreview() {
         Authorization: `Bearer ${authStore.token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ rules }),
+      body: JSON.stringify({ rules, smart_limit: form.value.smart_limit }),
     });
     const data = await res.json();
     if (data.success) {
@@ -673,15 +668,15 @@ async function savePlaylist() {
 
     const data = await res.json();
     if (data.success) {
-      alertStore.success(editingId.value ? "Smart Playlist aktualisiert" : "Smart Playlist erstellt");
+      alertStore.success(editingId.value ? t('admin.smartPlaylist.updated') : t('admin.smartPlaylist.created'));
       closeForm();
       await loadPlaylists();
     } else {
-      alertStore.error(data.error || "Fehler beim Speichern");
+      alertStore.error(data.error || t('admin.smartPlaylist.saveError'));
     }
   } catch (e) {
     console.error("Save error:", e);
-    alertStore.error("Fehler beim Speichern");
+    alertStore.error(t('admin.smartPlaylist.saveError'));
   } finally {
     isSaving.value = false;
   }
@@ -705,16 +700,16 @@ async function deletePlaylist() {
     });
     const data = await res.json();
     if (data.success) {
-      alertStore.success("Smart Playlist gelöscht");
+      alertStore.success(t('admin.smartPlaylist.deleted'));
       showDeleteConfirm.value = false;
       playlistToDelete.value = null;
       await loadPlaylists();
     } else {
-      alertStore.error(data.error || "Fehler beim Löschen");
+      alertStore.error(data.error || t('admin.smartPlaylist.deleteError'));
     }
   } catch (e) {
     console.error("Delete error:", e);
-    alertStore.error("Fehler beim Löschen");
+    alertStore.error(t('admin.smartPlaylist.deleteError'));
   }
 }
 
