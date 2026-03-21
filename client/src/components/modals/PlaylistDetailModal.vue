@@ -13,7 +13,7 @@
     >
       <!-- Playlist Modal with Animation -->
       <div
-        class="relative rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-500 ease-out"
+        class="cd-modal relative rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-500 ease-out"
         :class="{
           'w-full max-w-5xl': true,
           'h-[75vh]': playerStore.currentSong,
@@ -127,10 +127,11 @@
 
               <!-- Close Button -->
               <button
-                class="p-3 bg-black/40 hover:bg-black/60 text-white rounded-full transition-all duration-200 hover:scale-105"
+                class="flex-shrink-0 w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
                 @click="closeModal"
+                aria-label="Close"
               >
-                <i class="bi bi-x-lg text-xl"></i>
+                <i class="bi bi-x-lg text-white"></i>
               </button>
             </div>
 
@@ -629,6 +630,38 @@ export default {
 
 <style scoped>
 @reference "tailwindcss";
+
+/* CD Modal Animation */
+.cd-modal {
+  transform: scale(0.6) rotateY(-60deg) rotateX(20deg);
+  opacity: 0;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+}
+
+.cd-modal.animate-flip-in {
+  transform: scale(1) rotateY(0deg) rotateX(0deg);
+  opacity: 1;
+}
+
+.cd-modal.animate-flip-out {
+  transform: scale(0.6) rotateY(60deg) rotateX(-20deg);
+  opacity: 0;
+}
+
+/* Backdrop Animation */
+.backdrop {
+  opacity: 0;
+}
+
+.backdrop.backdrop-fade-in {
+  opacity: 1;
+}
+
+.backdrop.backdrop-fade-out {
+  opacity: 0;
+}
+
 /* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
