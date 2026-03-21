@@ -84,3 +84,13 @@ $app->get('/api/admin/stats-sharing', [$adminController, 'getStatsSharingConfig'
 $app->put('/api/admin/stats-sharing', [$adminController, 'updateStatsSharingConfig']);
 $app->get('/api/admin/stats-sharing/preview', [$adminController, 'previewStats']);
 $app->post('/api/admin/stats-sharing/send', [$adminController, 'sendStats']);
+
+// =============================================================================
+// Smart Playlist Management Routes
+// =============================================================================
+
+$app->get('/api/admin/smart-playlists', [$adminController, 'getSmartPlaylists']);
+$app->post('/api/admin/smart-playlists', [$adminController, 'createSmartPlaylist']);
+$app->post('/api/admin/smart-playlists/preview', [$adminController, 'previewSmartPlaylist']);
+$app->put('/api/admin/smart-playlists/{id}', [$adminController, 'updateSmartPlaylist']);
+$app->delete('/api/admin/smart-playlists/{id}', [$adminController, 'deleteSmartPlaylist']);

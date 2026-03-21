@@ -10,6 +10,7 @@ use App\Models\PlaylistPermission;
 use App\Repository\PlaylistRepository;
 use App\Repository\PlaylistSongRepository;
 use App\Repository\PlaylistPermissionRepository;
+use App\Repository\SmartPlaylistRepository;
 use App\Services\PlaylistCollageService;
 use Exception;
 use InvalidArgumentException;
@@ -20,6 +21,7 @@ final class PlaylistService
     private PlaylistSongRepository $playlistSongRepository;
     private PlaylistPermissionRepository $permissionRepository;
     private PlaylistCollageService $collageService;
+    private SmartPlaylistRepository $smartPlaylistRepository;
     private string $userId;
 
     public function __construct(
@@ -27,12 +29,14 @@ final class PlaylistService
         PlaylistSongRepository $playlistSongRepository,
         PlaylistPermissionRepository $permissionRepository,
         PlaylistCollageService $collageService,
-        string $userId
+        string $userId,
+        ?SmartPlaylistRepository $smartPlaylistRepository = null
     ) {
         $this->playlistRepository = $playlistRepository;
         $this->playlistSongRepository = $playlistSongRepository;
         $this->permissionRepository = $permissionRepository;
         $this->collageService = $collageService;
+        $this->smartPlaylistRepository = $smartPlaylistRepository ?? new SmartPlaylistRepository();
         $this->userId = $userId;
     }
 
@@ -80,12 +84,49 @@ final class PlaylistService
             return null;
         }
 
+        if ($playlist->isSmartPlaylist()) {
+            $rules = $playlist->getRules();
+            if (!is_array($rules) || empty($rules['conditions'])) {
+                return [
+                    'playlist' => $playlist->toArray(),
+                    'songs' => [],
+                ];
+            }
+
+            $songs = $this->smartPlaylistRepository->resolveSongs(
+                $rules,
+                $playlist->getSmartSortBy(),
+                $playlist->getSmartSortDirection(),
+                $playlist->getSmartLimit(),
+                $this->userId
+            );
+
+            $stats = $this->smartPlaylistRepository->getSmartPlaylistStats($rules, $this->userId);
+            $playlistArray = $playlist->toArray();
+            $playlistArray['song_count'] = $stats['song_count'];
+            $playlistArray['duration'] = $stats['duration'];
+
+            return [
+                'playlist' => $playlistArray,
+                'songs' => $songs,
+            ];
+        }
+
         $songs = $this->playlistSongRepository->findByPlaylistId($playlistId);
 
         return [
             'playlist' => $playlist->toArray(),
-            'songs' => $songs  // Already arrays from the repository
+            'songs' => $songs,
         ];
+    }
+
+    /**
+     * Get all smart playlists (for all users to see)
+     * @return array<int, Playlist>
+     */
+    public function getSmartPlaylists(): array
+    {
+        return $this->playlistRepository->findAllSmart();
     }
 
     /**
@@ -126,6 +167,10 @@ final class PlaylistService
 
     public function addSongToPlaylist(string $playlistId, string $songId, ?float $position = null): ?PlaylistSong
     {
+        $playlist = $this->playlistRepository->findById($playlistId);
+        if ($playlist && $playlist->isSmartPlaylist()) {
+            throw new InvalidArgumentException('Cannot modify songs in a smart playlist');
+        }
 
         if (!$this->canUserAccessPlaylist($playlistId, 'edit')) {
             error_log("PlaylistService::addSongToPlaylist - Access denied for playlist $playlistId");
@@ -156,6 +201,11 @@ final class PlaylistService
 
     public function removeSongFromPlaylist(string $playlistId, string $songId): bool
     {
+        $playlist = $this->playlistRepository->findById($playlistId);
+        if ($playlist && $playlist->isSmartPlaylist()) {
+            throw new InvalidArgumentException('Cannot modify songs in a smart playlist');
+        }
+
         if (!$this->canUserAccessPlaylist($playlistId, 'edit')) {
             return false;
         }
@@ -178,6 +228,11 @@ final class PlaylistService
      */
     public function reorderPlaylistSongs(string $playlistId, array $songPositions): bool
     {
+        $playlist = $this->playlistRepository->findById($playlistId);
+        if ($playlist && $playlist->isSmartPlaylist()) {
+            throw new InvalidArgumentException('Cannot reorder songs in a smart playlist');
+        }
+
         if (!$this->canUserAccessPlaylist($playlistId, 'edit')) {
             return false;
         }
@@ -257,7 +312,7 @@ final class PlaylistService
         }
 
         $playlist = $this->playlistRepository->findById($playlistId);
-        if ($playlist && $playlist->isGlobalPlaylist() && $requiredPermission === 'view') {
+        if ($playlist && ($playlist->isGlobalPlaylist() || $playlist->isSmartPlaylist()) && $requiredPermission === 'view') {
             return true;
         }
 

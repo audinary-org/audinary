@@ -14,8 +14,9 @@ final class Playlist implements JsonSerializable
 {
     private const TYPE_USER = 'user';
     private const TYPE_GLOBAL = 'global';
+    private const TYPE_SMART = 'smart';
 
-    private const ALLOWED_TYPES = [self::TYPE_USER, self::TYPE_GLOBAL];
+    private const ALLOWED_TYPES = [self::TYPE_USER, self::TYPE_GLOBAL, self::TYPE_SMART];
 
     private string $id;
     private string $userId;
@@ -28,6 +29,11 @@ final class Playlist implements JsonSerializable
     private string $createdAt;
     private string $updatedAt;
     private bool $isFavorite;
+    /** @var array<string, mixed>|null */
+    private ?array $rules;
+    private ?string $smartSortBy;
+    private string $smartSortDirection;
+    private ?int $smartLimit;
 
     /**
      * @param array<string, mixed> $data
@@ -73,6 +79,19 @@ final class Playlist implements JsonSerializable
         $this->createdAt = $data['created_at'] ?? '';
         $this->updatedAt = $data['updated_at'] ?? '';
         $this->isFavorite = !empty($data['is_favorite']);
+
+        // Smart playlist fields
+        $rules = $data['rules'] ?? null;
+        if (is_string($rules)) {
+            $rules = json_decode($rules, true);
+        }
+        $this->rules = is_array($rules) ? $rules : null;
+        $this->smartSortBy = isset($data['smart_sort_by']) && $data['smart_sort_by'] !== '' ? $data['smart_sort_by'] : null;
+        $this->smartSortDirection = $data['smart_sort_direction'] ?? 'asc';
+        $this->smartLimit = isset($data['smart_limit']) ? (int) $data['smart_limit'] : null;
+        if ($this->smartLimit !== null && $this->smartLimit <= 0) {
+            $this->smartLimit = null;
+        }
 
         if ($this->description !== null && strlen($this->description) > 1000) {
             throw new InvalidArgumentException('Playlist description cannot exceed 1000 characters');
@@ -152,6 +171,32 @@ final class Playlist implements JsonSerializable
         return $this->type === self::TYPE_GLOBAL;
     }
 
+    public function isSmartPlaylist(): bool
+    {
+        return $this->type === self::TYPE_SMART;
+    }
+
+    /** @return array<string, mixed>|null */
+    public function getRules(): ?array
+    {
+        return $this->rules;
+    }
+
+    public function getSmartSortBy(): ?string
+    {
+        return $this->smartSortBy;
+    }
+
+    public function getSmartSortDirection(): string
+    {
+        return $this->smartSortDirection;
+    }
+
+    public function getSmartLimit(): ?int
+    {
+        return $this->smartLimit;
+    }
+
     public function hasCoverImage(): bool
     {
         return $this->coverImageUuid !== null;
@@ -188,7 +233,7 @@ final class Playlist implements JsonSerializable
      */
     public function toArray(): array
     {
-        return [
+        $data = [
             'id' => $this->id,
             'user_id' => $this->userId,
             'type' => $this->type,
@@ -203,6 +248,15 @@ final class Playlist implements JsonSerializable
             'updated_at' => $this->updatedAt,
             'is_favorite' => $this->isFavorite,
         ];
+
+        if ($this->isSmartPlaylist()) {
+            $data['rules'] = $this->rules;
+            $data['smart_sort_by'] = $this->smartSortBy;
+            $data['smart_sort_direction'] = $this->smartSortDirection;
+            $data['smart_limit'] = $this->smartLimit;
+        }
+
+        return $data;
     }
 
     /**
@@ -246,11 +300,24 @@ final class Playlist implements JsonSerializable
             throw new InvalidArgumentException('Invalid playlist type');
         }
 
-        return [
+        $result = [
             'user_id' => trim($data['user_id']),
             'type' => $type,
             'name' => $name,
             'description' => $description,
         ];
+
+        if ($type === self::TYPE_SMART) {
+            $rules = $data['rules'] ?? null;
+            if (!is_array($rules) || empty($rules['conditions'])) {
+                throw new InvalidArgumentException('Smart playlists require at least one rule');
+            }
+            $result['rules'] = $rules;
+            $result['smart_sort_by'] = $data['smart_sort_by'] ?? null;
+            $result['smart_sort_direction'] = $data['smart_sort_direction'] ?? 'asc';
+            $result['smart_limit'] = isset($data['smart_limit']) ? (int) $data['smart_limit'] : null;
+        }
+
+        return $result;
     }
 }

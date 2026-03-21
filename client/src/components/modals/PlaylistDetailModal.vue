@@ -57,8 +57,14 @@
                 <div class="flex flex-col sm:flex-row gap-4 items-start">
                   <div class="flex-1 text-center sm:text-left">
                     <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">
+                      <span v-if="currentPlaylistDetail?.type === 'smart'" class="inline-flex items-center gap-1.5 mr-2 px-2.5 py-1 bg-purple-600/60 rounded-lg text-sm font-medium align-middle">
+                        <i class="bi bi-lightning-fill text-yellow-300"></i> Smart
+                      </span>
                       {{ currentPlaylistDetail?.name || "Playlist" }}
                     </h1>
+                    <p v-if="currentPlaylistDetail?.description" class="text-sm text-white/60 mb-2">
+                      {{ currentPlaylistDetail.description }}
+                    </p>
                     <p class="text-lg text-white/80 mb-2">
                       {{ playlistSongs.length || 0 }} {{ $t("common.songs") }}
                     </p>

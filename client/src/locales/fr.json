@@ -198,7 +198,8 @@
     "confirmRemoveUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
     "userRemoved": "Utilisateur supprimé",
     "removeUserError": "Erreur lors de la suppression de l'utilisateur",
-    "removeSongError": "Erreur lors de la suppression de la chanson"
+    "removeSongError": "Erreur lors de la suppression de la chanson",
+    "smartPlaylist": "Playlist intelligente"
   },
   "player": {
     "play": "Lire",

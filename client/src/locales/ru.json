@@ -198,7 +198,8 @@
     "confirmRemoveUser": "Вы уверены, что хотите удалить этого пользователя?",
     "userRemoved": "Пользователь удален",
     "removeUserError": "Ошибка удаления пользователя",
-    "removeSongError": "Ошибка удаления песни"
+    "removeSongError": "Ошибка удаления песни",
+    "smartPlaylist": "Умный плейлист"
   },
   "player": {
     "play": "Воспроизвести",

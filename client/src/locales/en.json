@@ -198,7 +198,8 @@
     "confirmRemoveUser": "Are you sure you want to remove this user?",
     "userRemoved": "User removed",
     "removeUserError": "Error removing user",
-    "removeSongError": "Error removing song"
+    "removeSongError": "Error removing song",
+    "smartPlaylist": "Smart Playlist"
   },
   "player": {
     "play": "Play",

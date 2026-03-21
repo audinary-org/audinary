@@ -71,10 +71,18 @@ final class PlaylistController
             $playlists = $playlistService->getUserPlaylists($offset, $limit);
             $count = $playlistService->countUserPlaylists();
 
+            // Also include smart playlists (system-wide)
+            $smartPlaylists = $playlistService->getSmartPlaylists();
+
+            $allPlaylists = array_merge(
+                array_map(fn($p) => $p->toArray(), $smartPlaylists),
+                array_map(fn($p) => $p->toArray(), $playlists)
+            );
+
             return $this->createJsonResponse($response, [
                 'success' => true,
-                'playlists' => array_map(fn($p) => $p->toArray(), $playlists),
-                'total' => $count,
+                'playlists' => $allPlaylists,
+                'total' => $count + count($smartPlaylists),
                 'offset' => $offset,
                 'limit' => $limit
             ]);

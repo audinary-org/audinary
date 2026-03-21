@@ -63,7 +63,7 @@ final class PlaylistRepository extends BaseRepository
                 ON f.user_id = :current_user_id
                 AND f.favorite_type = \'playlist\'
                 AND f.playlist_id = p.id
-            WHERE p.user_id = :playlist_owner_id
+            WHERE p.user_id = :playlist_owner_id AND p.type != \'smart\'
             ORDER BY p.created_at DESC
             LIMIT :limit OFFSET :offset
         ');
@@ -119,11 +119,51 @@ final class PlaylistRepository extends BaseRepository
     public function countByUserId(string $userId): int
     {
         $stmt = $this->db->prepare('
-            SELECT COUNT(*) FROM playlists WHERE user_id = ?
+            SELECT COUNT(*) FROM playlists WHERE user_id = ? AND type != \'smart\'
         ');
         $stmt->execute([$userId]);
 
         return (int) $stmt->fetchColumn();
+    }
+
+    /** @return array<int, Playlist> */
+    public function findAllSmart(): array
+    {
+        $stmt = $this->db->prepare('
+            SELECT
+                p.*,
+                0 AS song_count,
+                0 AS duration,
+                CASE WHEN f.user_id IS NOT NULL THEN 1 ELSE 0 END AS is_favorite
+            FROM playlists p
+            LEFT JOIN favorites f
+                ON f.user_id = :current_user_id
+                AND f.favorite_type = \'playlist\'
+                AND f.playlist_id = p.id
+            WHERE p.type = \'smart\'
+            ORDER BY p.created_at DESC
+        ');
+        $stmt->execute([
+            'current_user_id' => $this->userId,
+        ]);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(fn($data): \App\Models\Playlist => new Playlist($data), $results);
+    }
+
+    /** @return array<int, Playlist> */
+    public function findAllSmartAdmin(): array
+    {
+        $stmt = $this->db->prepare('
+            SELECT p.*, 0 AS song_count, 0 AS duration
+            FROM playlists p
+            WHERE p.type = \'smart\'
+            ORDER BY p.created_at DESC
+        ');
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(fn($data): \App\Models\Playlist => new Playlist($data), $results);
     }
 
     /** @param array<string, mixed> $data */
@@ -131,18 +171,37 @@ final class PlaylistRepository extends BaseRepository
     {
         $playlistData = Playlist::createData($data);
         $id = $this->generateUuid();
+        $type = $playlistData['type'] ?? 'user';
 
-        $stmt = $this->db->prepare('
-            INSERT INTO playlists (id, name, description, user_id)
-            VALUES (?, ?, ?, ?)
-        ');
-
-        $result = $stmt->execute([
-            $id,
-            $playlistData['name'],
-            $playlistData['description'],
-            $playlistData['user_id']
-        ]);
+        if ($type === 'smart') {
+            $stmt = $this->db->prepare('
+                INSERT INTO playlists (id, name, description, user_id, type, rules, smart_sort_by, smart_sort_direction, smart_limit)
+                VALUES (?, ?, ?, ?, ?, ?::jsonb, ?, ?, ?)
+            ');
+            $result = $stmt->execute([
+                $id,
+                $playlistData['name'],
+                $playlistData['description'],
+                $playlistData['user_id'],
+                'smart',
+                json_encode($playlistData['rules']),
+                $playlistData['smart_sort_by'] ?? null,
+                $playlistData['smart_sort_direction'] ?? 'asc',
+                $playlistData['smart_limit'] ?? null,
+            ]);
+        } else {
+            $stmt = $this->db->prepare('
+                INSERT INTO playlists (id, name, description, user_id, type)
+                VALUES (?, ?, ?, ?, ?)
+            ');
+            $result = $stmt->execute([
+                $id,
+                $playlistData['name'],
+                $playlistData['description'],
+                $playlistData['user_id'],
+                $type,
+            ]);
+        }
 
         if (!$result) {
             error_log("Playlist creation failed: " . json_encode($stmt->errorInfo()));
@@ -177,6 +236,26 @@ final class PlaylistRepository extends BaseRepository
         if (isset($data['description'])) {
             $updates[] = 'description = ?';
             $values[] = empty($data['description']) ? null : trim($data['description']);
+        }
+
+        // Smart playlist fields
+        if ($existing->isSmartPlaylist()) {
+            if (isset($data['rules']) && is_array($data['rules'])) {
+                $updates[] = 'rules = ?::jsonb';
+                $values[] = json_encode($data['rules']);
+            }
+            if (array_key_exists('smart_sort_by', $data)) {
+                $updates[] = 'smart_sort_by = ?';
+                $values[] = $data['smart_sort_by'];
+            }
+            if (isset($data['smart_sort_direction'])) {
+                $updates[] = 'smart_sort_direction = ?';
+                $values[] = $data['smart_sort_direction'];
+            }
+            if (array_key_exists('smart_limit', $data)) {
+                $updates[] = 'smart_limit = ?';
+                $values[] = $data['smart_limit'] !== null ? (int) $data['smart_limit'] : null;
+            }
         }
 
         if ($updates === []) {

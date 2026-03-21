@@ -13,6 +13,9 @@ use App\Services\PasswordResetService;
 use App\Services\BackupService;
 use App\Services\GlobalSettingsService;
 use App\Services\StatsService;
+use App\Repository\PlaylistRepository;
+use App\Repository\SmartPlaylistRepository;
+use App\Models\Playlist;
 use Exception;
 use PDO;
 use Slim\Psr7\Stream;
@@ -1467,6 +1470,165 @@ final class AdminController
                 'success' => false,
                 'message' => 'Failed to send stats'
             ], 500);
+        }
+    }
+
+    // =========================================================================
+    // Smart Playlist Admin Methods
+    // =========================================================================
+
+    public function getSmartPlaylists(Request $request, Response $response): Response
+    {
+        if (($error = $this->checkAdmin($request, $response)) instanceof \Psr\Http\Message\ResponseInterface) {
+            return $error;
+        }
+
+        try {
+            $playlistRepo = new PlaylistRepository();
+            $smartRepo = new SmartPlaylistRepository();
+            $playlists = $playlistRepo->findAllSmartAdmin();
+
+            $result = [];
+            foreach ($playlists as $playlist) {
+                $data = $playlist->toArray();
+                $rules = $playlist->getRules();
+                if (is_array($rules) && !empty($rules['conditions'])) {
+                    $stats = $smartRepo->getSmartPlaylistStats($rules, null);
+                    $data['song_count'] = $stats['song_count'];
+                    $data['duration'] = $stats['duration'];
+                }
+                $result[] = $data;
+            }
+
+            return $this->createJsonResponse($response, ['success' => true, 'playlists' => $result]);
+        } catch (Exception $e) {
+            error_log("Error getting smart playlists: " . $e->getMessage());
+            return $this->createJsonResponse($response, ['error' => 'Failed to fetch smart playlists'], 500);
+        }
+    }
+
+    public function createSmartPlaylist(Request $request, Response $response): Response
+    {
+        if (($error = $this->checkAdmin($request, $response)) instanceof \Psr\Http\Message\ResponseInterface) {
+            return $error;
+        }
+
+        try {
+            $data = json_decode($request->getBody()->getContents(), true);
+
+            if (!is_array($data) || empty($data['name'])) {
+                return $this->createJsonResponse($response, ['error' => 'Playlist name is required'], 400);
+            }
+
+            if (!isset($data['rules']) || !is_array($data['rules']) || empty($data['rules']['conditions'])) {
+                return $this->createJsonResponse($response, ['error' => 'At least one rule is required'], 400);
+            }
+
+            $authToken = $request->getAttribute('auth_token');
+            $data['user_id'] = $authToken->getUserId();
+            $data['type'] = 'smart';
+
+            $playlistRepo = new PlaylistRepository($authToken->getUserId());
+            $playlist = $playlistRepo->create($data);
+
+            return $this->createJsonResponse($response, [
+                'success' => true,
+                'playlist' => $playlist->toArray()
+            ], 201);
+        } catch (\InvalidArgumentException $e) {
+            return $this->createJsonResponse($response, ['error' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            error_log("Error creating smart playlist: " . $e->getMessage());
+            return $this->createJsonResponse($response, ['error' => 'Failed to create smart playlist'], 500);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $args
+     */
+    public function updateSmartPlaylist(Request $request, Response $response, array $args): Response
+    {
+        if (($error = $this->checkAdmin($request, $response)) instanceof \Psr\Http\Message\ResponseInterface) {
+            return $error;
+        }
+
+        try {
+            $playlistId = $args['id'];
+            $data = json_decode($request->getBody()->getContents(), true);
+
+            if (!is_array($data)) {
+                return $this->createJsonResponse($response, ['error' => 'Invalid request data'], 400);
+            }
+
+            $authToken = $request->getAttribute('auth_token');
+            $playlistRepo = new PlaylistRepository($authToken->getUserId());
+            $playlist = $playlistRepo->update($playlistId, $data);
+
+            if (!$playlist instanceof Playlist) {
+                return $this->createJsonResponse($response, ['error' => 'Smart playlist not found'], 404);
+            }
+
+            return $this->createJsonResponse($response, [
+                'success' => true,
+                'playlist' => $playlist->toArray()
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return $this->createJsonResponse($response, ['error' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            error_log("Error updating smart playlist: " . $e->getMessage());
+            return $this->createJsonResponse($response, ['error' => 'Failed to update smart playlist'], 500);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $args
+     */
+    public function deleteSmartPlaylist(Request $request, Response $response, array $args): Response
+    {
+        if (($error = $this->checkAdmin($request, $response)) instanceof \Psr\Http\Message\ResponseInterface) {
+            return $error;
+        }
+
+        try {
+            $playlistId = $args['id'];
+            $playlistRepo = new PlaylistRepository();
+            $deleted = $playlistRepo->delete($playlistId);
+
+            if (!$deleted) {
+                return $this->createJsonResponse($response, ['error' => 'Smart playlist not found'], 404);
+            }
+
+            return $this->createJsonResponse($response, ['success' => true]);
+        } catch (Exception $e) {
+            error_log("Error deleting smart playlist: " . $e->getMessage());
+            return $this->createJsonResponse($response, ['error' => 'Failed to delete smart playlist'], 500);
+        }
+    }
+
+    public function previewSmartPlaylist(Request $request, Response $response): Response
+    {
+        if (($error = $this->checkAdmin($request, $response)) instanceof \Psr\Http\Message\ResponseInterface) {
+            return $error;
+        }
+
+        try {
+            $data = json_decode($request->getBody()->getContents(), true);
+
+            if (!is_array($data) || !isset($data['rules']) || !is_array($data['rules'])) {
+                return $this->createJsonResponse($response, ['error' => 'Rules are required'], 400);
+            }
+
+            $smartRepo = new SmartPlaylistRepository();
+            $stats = $smartRepo->getSmartPlaylistStats($data['rules'], null);
+
+            return $this->createJsonResponse($response, [
+                'success' => true,
+                'song_count' => $stats['song_count'],
+                'duration' => $stats['duration'],
+            ]);
+        } catch (Exception $e) {
+            error_log("Error previewing smart playlist: " . $e->getMessage());
+            return $this->createJsonResponse($response, ['error' => 'Failed to preview smart playlist'], 500);
         }
     }
 }

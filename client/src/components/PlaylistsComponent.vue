@@ -89,6 +89,15 @@
                   ></i>
                 </div>
 
+                <!-- Smart Playlist Badge (top left) -->
+                <div
+                  v-if="playlist.type === 'smart'"
+                  class="absolute top-2 left-2 px-2 py-0.5 bg-purple-600/80 backdrop-blur-sm rounded-full flex items-center gap-1 z-[10]"
+                >
+                  <i class="bi bi-lightning-fill text-[10px] text-yellow-300"></i>
+                  <span class="text-[10px] text-white font-medium">Smart</span>
+                </div>
+
                 <!-- Favorite icon (top right) -->
                 <button
                   class="absolute top-2 right-2 w-8 h-8 bg-audinary/30 hover:bg-audinary/50 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110 z-[10]"
@@ -118,9 +127,9 @@
                   <i class="bi bi-list text-xs text-gray"></i>
                 </button>
 
-                <!-- Share button (bottom center) -->
+                <!-- Share button (bottom center) - hidden for smart playlists -->
                 <button
-                  v-if="canCreateShare"
+                  v-if="canCreateShare && playlist.type !== 'smart'"
                   class="absolute bottom-8 right-12 w-8 h-8 bg-audinary/30 hover:bg-audinary/50 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110 opacity-0 group-hover:opacity-100 z-[10]"
                   @click.stop="sharePlaylist(playlist)"
                   :title="$t('shares.share_playlist')"
@@ -128,8 +137,9 @@
                   <i class="bi bi-share text-xs text-gray"></i>
                 </button>
 
-                <!-- Permissions button (bottom right) -->
+                <!-- Permissions button (bottom right) - hidden for smart playlists -->
                 <button
+                  v-if="playlist.type !== 'smart'"
                   class="absolute bottom-8 right-2 w-8 h-8 bg-audinary/30 hover:bg-audinary/50 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110 opacity-0 group-hover:opacity-100 z-[10]"
                   @click.stop="managePlaylistPermissions(playlist)"
                   :title="$t('playlist.managePermissions')"
@@ -145,6 +155,9 @@
                 class="text-center font-semibold mb-1 text-audinary text-lg truncate"
               >
                 {{ playlist.name }}
+              </p>
+              <p v-if="playlist.type === 'smart'" class="text-center text-purple-400 text-xs mb-1">
+                <i class="bi bi-lightning-fill text-yellow-300"></i> {{ $t('playlist.smartPlaylist') }}
               </p>
               <p class="text-center text-white/80 text-xs truncate mb-1">
                 {{ playlist.song_count || 0 }} {{ $t("common.songs") }}
@@ -210,6 +223,9 @@
                         <h5
                           class="text-lg text-audinary font-bold mb-0 truncate"
                         >
+                          <span v-if="playlist.type === 'smart'" class="inline-flex items-center gap-1 mr-1 px-1.5 py-0.5 bg-purple-600/60 rounded text-xs text-white font-medium align-middle">
+                            <i class="bi bi-lightning-fill text-yellow-300 text-[10px]"></i> Smart
+                          </span>
                           {{ playlist.name }}
                         </h5>
                         <p
@@ -241,6 +257,7 @@
                             <i class="bi bi-music-note-list"></i>
                           </button>
                           <button
+                            v-if="playlist.type !== 'smart'"
                             class="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded transition-colors"
                             @click.stop="managePlaylistPermissions(playlist)"
                             :title="$t('playlist.managePermissions')"
@@ -248,7 +265,7 @@
                             <i class="bi bi-people"></i>
                           </button>
                           <button
-                            v-if="canCreateShare"
+                            v-if="canCreateShare && playlist.type !== 'smart'"
                             class="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded transition-colors"
                             @click.stop="sharePlaylist(playlist)"
                             :title="$t('shares.share_playlist')"
@@ -256,6 +273,7 @@
                             <i class="bi bi-share"></i>
                           </button>
                           <button
+                            v-if="playlist.type !== 'smart'"
                             class="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded transition-colors"
                             @click.stop="openPlaylistDetail(playlist.id)"
                             :title="$t('common.edit')"
@@ -263,6 +281,7 @@
                             <i class="bi bi-pencil"></i>
                           </button>
                           <button
+                            v-if="playlist.type !== 'smart'"
                             class="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded transition-colors"
                             @click.stop="confirmDeletePlaylist(playlist)"
                             :title="$t('common.delete')"
@@ -936,6 +955,9 @@ export default {
 
     function canEditPlaylist(playlist) {
       if (!playlist) return false;
+
+      // Smart playlists are not editable by users (admin-only)
+      if (playlist.type === 'smart') return false;
 
       // Get current user from auth store
       const currentUser = authStore.user;

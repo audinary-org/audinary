@@ -199,7 +199,8 @@
     "confirmRemoveUser": "Möchten Sie diesen Benutzer wirklich entfernen?",
     "userRemoved": "Benutzer entfernt",
     "removeUserError": "Fehler beim Entfernen des Benutzers",
-    "removeSongError": "Fehler beim Entfernen des Songs"
+    "removeSongError": "Fehler beim Entfernen des Songs",
+    "smartPlaylist": "Smart Playlist"
   },
   "player": {
     "play": "Abspielen",
