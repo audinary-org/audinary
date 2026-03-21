@@ -294,7 +294,7 @@
           </h6>
           <div class="space-y-2">
             <div
-              v-for="(song, index) in playerStore.upcomingQueue"
+              v-for="(song, index) in playerStore.upcomingQueue.slice(0, 5)"
               :key="song.id + '-' + index"
               class="flex items-center p-3 bg-white/5 rounded-xl border border-white/10 cursor-pointer active:scale-[0.98] transition-all duration-200 active:bg-white/10"
               @click="playFromQueue(index)"
@@ -350,7 +350,7 @@
           <div class="space-y-2">
             <div
               v-for="(song, index) in playerStore.previousQueue
-                .slice()
+                .slice(-5)
                 .reverse()"
               :key="song.id + '-prev-' + index"
               class="flex items-center p-3 bg-white/5 rounded-xl border border-white/10 cursor-pointer active:scale-[0.98] transition-all duration-200 active:bg-white/10"
@@ -1326,7 +1326,7 @@ const localModeAvailable = computed(() => playerStore.localModeEnabled);
 
 // Player should be visible if there's a current song OR if the queue has songs
 const shouldShowPlayer = computed(() => {
-  return currentSong.value || playerStore.upcomingQueue.length > 0;
+  return currentSong.value || playerStore.hasQueue;
 });
 
 // Computed for play/pause icon - shows play if no song is playing, pause if playing
@@ -1342,10 +1342,8 @@ const displayAlbumId = computed(() => {
   if (currentSong.value?.album_id) {
     return currentSong.value.album_id;
   }
-  if (playerStore.upcomingQueue.length > 0) {
-    return playerStore.upcomingQueue[0]?.album_id || "default";
-  }
-  return "default";
+  const next = playerStore.nextSongInQueue;
+  return next?.album_id || "default";
 });
 
 // Get display title - from current song or first song in queue
@@ -1353,10 +1351,8 @@ const displayTitle = computed(() => {
   if (currentSong.value?.title) {
     return currentSong.value.title;
   }
-  if (playerStore.upcomingQueue.length > 0) {
-    return playerStore.upcomingQueue[0]?.title || "No song selected";
-  }
-  return "No song selected";
+  const next = playerStore.nextSongInQueue;
+  return next?.title || "No song selected";
 });
 
 // Get display artist - from current song or first song in queue
@@ -1364,10 +1360,8 @@ const displayArtist = computed(() => {
   if (currentSong.value?.artist) {
     return currentSong.value.artist;
   }
-  if (playerStore.upcomingQueue.length > 0) {
-    return playerStore.upcomingQueue[0]?.artist || "-";
-  }
-  return "-";
+  const next = playerStore.nextSongInQueue;
+  return next?.artist || "-";
 });
 
 // Get display album - from current song or first song in queue
@@ -1375,10 +1369,8 @@ const displayAlbum = computed(() => {
   if (currentSong.value?.album) {
     return currentSong.value.album;
   }
-  if (playerStore.upcomingQueue.length > 0) {
-    return playerStore.upcomingQueue[0]?.album || "-";
-  }
-  return "-";
+  const next = playerStore.nextSongInQueue;
+  return next?.album || "-";
 });
 
 const progressPercentage = computed(() => {

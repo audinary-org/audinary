@@ -730,9 +730,7 @@ export default {
           playerStore.playSong(songsToQueue[0]);
 
           // Add remaining songs to queue
-          for (let i = 1; i < songsToQueue.length; i++) {
-            playerStore.addToQueue(songsToQueue[i]);
-          }
+          playerStore.addMultipleToQueue(songsToQueue.slice(1));
 
           const count = songsToQueue.length;
           alertStore.success(t("artists.playingRandomSongs", { count }));

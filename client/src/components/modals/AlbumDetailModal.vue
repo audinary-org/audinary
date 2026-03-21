@@ -168,7 +168,7 @@
                     <div
                       v-for="track in disc.tracks"
                       :key="track.song_id"
-                      class="flex items-center py-3 px-4 rounded-xl backdrop-blur-sm bg-white/5 hover:bg-white/15 transition-all cursor-pointer group mb-2 shadow-sm"
+                      class="flex items-center py-3 px-4 rounded-xl bg-white/[0.07] hover:bg-white/15 transition-colors cursor-pointer group mb-2"
                       @click="playTrack(track)"
                     >
                       <div
@@ -231,7 +231,7 @@
                 <div
                   v-for="track in tracks"
                   :key="track.song_id"
-                  class="flex items-center py-3 px-4 rounded-xl backdrop-blur-sm bg-white/5 hover:bg-white/15 transition-all cursor-pointer group shadow-sm"
+                  class="flex items-center py-3 px-4 rounded-xl bg-white/[0.07] hover:bg-white/15 transition-colors cursor-pointer group"
                   @click="playTrack(track)"
                 >
                   <div
@@ -312,7 +312,7 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { ref, shallowRef, computed, watch, onMounted, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePlayerStore } from "@/stores/player";
 import { useApiStore } from "@/stores/api";
@@ -344,7 +344,7 @@ export default {
     const alertStore = useAlertStore();
     const themeStore = useThemeStore();
 
-    const tracks = ref([]);
+    const tracks = shallowRef([]);
     const loading = ref(false);
 
     // Playlist modal state
@@ -489,9 +489,7 @@ export default {
         const remainingTracks = allTracks.slice(selectedIndex + 1);
 
         // Add remaining tracks to queue
-        remainingTracks.forEach((track) => {
-          playerStore.addToQueue(track);
-        });
+        playerStore.addMultipleToQueue(remainingTracks);
 
         if (remainingTracks.length > 0) {
           alertStore.info(
@@ -537,7 +535,12 @@ export default {
           itemId: track.song_id,
           currentlyFav: track.is_favorite,
         });
-        track.is_favorite = !track.is_favorite;
+        // Replace array to trigger shallowRef reactivity
+        tracks.value = tracks.value.map((t) =>
+          t.song_id === track.song_id
+            ? { ...t, is_favorite: !t.is_favorite }
+            : t,
+        );
       } catch (error) {
         console.error("Error toggling track favorite:", error);
         alertStore.error("Fehler beim Ändern der Favoriten");
@@ -608,16 +611,16 @@ export default {
     };
 
     const closeModal = () => {
+      // Clear data and emit close immediately to free memory
+      tracks.value = [];
+      selectedTrack.value = null;
+      showPlaylistModal.value = false;
+      showAlbumPlaylistModal.value = false;
+      activeDropdown.value = null;
+      emit("close");
+
       isClosing.value = true;
       setTimeout(() => {
-        // Clear data to free memory
-        tracks.value = [];
-        selectedTrack.value = null;
-        showPlaylistModal.value = false;
-        showAlbumPlaylistModal.value = false;
-        activeDropdown.value = null;
-
-        emit("close");
         // Reset animation states after closing
         isClosing.value = false;
         isOpening.value = false;

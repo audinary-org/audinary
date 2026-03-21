@@ -428,7 +428,7 @@
 </template>
 
 <script>
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePlayerStore } from "@/stores/player";
 import { useThemeStore } from "@/stores/theme";
@@ -455,16 +455,8 @@ export default {
     const isEditMode = ref(false);
     const editableQueue = ref([]);
 
-    // Watch queue changes to update editable queue
-    watch(
-      queue,
-      (newQueue) => {
-        if (isEditMode.value) {
-          editableQueue.value = newQueue.map((song) => ({ ...song }));
-        }
-      },
-      { deep: true },
-    );
+    // editableQueue is populated when entering edit mode (toggleEditMode)
+    // No deep watcher needed - avoids expensive reactivity traversal of 100+ songs
 
     const playFromQueue = (index) => {
       if (isEditMode.value) return; // Prevent play while editing

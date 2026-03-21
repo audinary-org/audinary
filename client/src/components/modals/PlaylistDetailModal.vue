@@ -216,7 +216,9 @@
             <!-- Songs List -->
             <div
               v-else-if="playlistSongs.length > 0"
+              ref="songsScrollContainer"
               class="h-full overflow-y-auto pr-2 custom-scrollbar"
+              @scroll="onSongsScroll"
             >
               <!-- Draggable Songs List (Edit Mode) -->
               <draggable
@@ -235,7 +237,7 @@
                 <template #item="{ element: song, index }">
                   <div
                     :key="`edit-${song.id || song.song_id}-${index}`"
-                    class="flex items-center py-3 px-4 rounded-xl backdrop-blur-sm bg-white/5 hover:bg-white/15 transition-all duration-300 shadow-sm"
+                    class="flex items-center py-3 px-4 rounded-xl bg-white/[0.07] hover:bg-white/15 transition-colors"
                   >
                     <!-- Drag Handle -->
                     <div
@@ -259,7 +261,6 @@
                         class="absolute inset-0 rounded"
                         :style="{
                           background: `linear-gradient(${song.coverGradient.angle || 135}deg, ${song.coverGradient.colors.join(', ')})`,
-                          filter: 'blur(10px)',
                           zIndex: 1,
                         }"
                       ></div>
@@ -303,9 +304,9 @@
               <!-- Normal Songs List (View Mode) -->
               <div v-else class="space-y-2">
                 <div
-                  v-for="(song, index) in playlistSongs"
+                  v-for="(song, index) in visibleSongs"
                   :key="`view-${song.id || song.song_id}-${index}`"
-                  class="flex items-center py-3 px-4 rounded-xl backdrop-blur-sm bg-white/5 hover:bg-white/15 transition-all cursor-pointer group shadow-sm"
+                  class="flex items-center py-3 px-4 rounded-xl bg-white/[0.07] hover:bg-white/15 transition-colors cursor-pointer group"
                   @click="playSong(song)"
                 >
                   <div
@@ -490,6 +491,36 @@ export default {
     const themeStore = useThemeStore();
     const alertStore = useAlertStore();
 
+    // Incremental render limit - only render a subset of songs at a time
+    const RENDER_BATCH = 30;
+    const renderLimit = ref(RENDER_BATCH);
+    const songsScrollContainer = ref(null);
+
+    const visibleSongs = computed(() => {
+      return props.playlistSongs.slice(0, renderLimit.value);
+    });
+
+    const hasMoreSongs = computed(() => {
+      return renderLimit.value < props.playlistSongs.length;
+    });
+
+    let scrollTicking = false;
+    const onSongsScroll = (e) => {
+      if (!hasMoreSongs.value || scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(() => {
+        const el = e.target;
+        // Load more when scrolled within 200px of the bottom
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 200) {
+          renderLimit.value = Math.min(
+            renderLimit.value + RENDER_BATCH,
+            props.playlistSongs.length,
+          );
+        }
+        scrollTicking = false;
+      });
+    };
+
     // Animation state
     const isOpening = ref(false);
     const isClosing = ref(false);
@@ -518,11 +549,12 @@ export default {
     const closeModal = () => {
       isClosing.value = true;
       setTimeout(() => {
+        // Emit close after animation so parent clears data and hides modal
         emit("close");
-        // Reset animation states after closing
         isClosing.value = false;
         isOpening.value = false;
-      }, 500); // Match the animation duration
+        renderLimit.value = RENDER_BATCH;
+      }, 400); // Slightly shorter than animation for snappy feel
     };
 
     const handleBackdropClick = () => {
@@ -537,6 +569,9 @@ export default {
       () => props.isVisible,
       (newValue) => {
         if (newValue) {
+          // Reset render limit for fresh open
+          renderLimit.value = RENDER_BATCH;
+
           // Reset animation states when modal opens
           isClosing.value = false;
           isOpening.value = false;
@@ -561,7 +596,7 @@ export default {
     const playSong = (song) => {
       playerStore.playSong(song);
 
-      // Add remaining songs from playlist to queue
+      // Add remaining songs from playlist to queue in one batch
       const songId = song.id || song.song_id;
       const selectedIndex = props.playlistSongs.findIndex(
         (s) => (s.id || s.song_id) === songId,
@@ -569,11 +604,8 @@ export default {
 
       if (selectedIndex !== -1 && selectedIndex < props.playlistSongs.length - 1) {
         const remainingTracks = props.playlistSongs.slice(selectedIndex + 1);
-        remainingTracks.forEach((track) => {
-          playerStore.addToQueue(track);
-        });
-
         if (remainingTracks.length > 0) {
+          playerStore.addMultipleToQueue(remainingTracks);
           alertStore.info(
             t("playlist.addedToQueue", { name: `${remainingTracks.length} Songs` }),
           );
@@ -644,6 +676,10 @@ export default {
       isClosing,
       playlistName,
       playlistDescription,
+      visibleSongs,
+      hasMoreSongs,
+      onSongsScroll,
+      songsScrollContainer,
     };
   },
 };
@@ -719,11 +755,6 @@ export default {
 .mobile-touch-target {
   min-height: 44px;
   min-width: 44px;
-}
-
-/* Additional hover effects */
-.group:hover .shadow-sm {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Mobile device optimizations */

@@ -417,7 +417,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, shallowRef, onMounted, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePlaylistStore } from "@/stores/playlist";
 import { usePlayerStore } from "@/stores/player";
@@ -469,7 +469,7 @@ export default {
     // Local playlist detail modal state
     const showDetailModal = ref(false);
     const selectedPlaylist = ref(null);
-    const playlistSongs = ref([]);
+    const playlistSongs = shallowRef([]);
 
     // Edit mode state
     const isEditMode = ref(false);
@@ -477,7 +477,7 @@ export default {
       name: "",
       description: "",
     });
-    const editablePlaylistSongs = ref([]);
+    const editablePlaylistSongs = shallowRef([]);
 
     // View and filter state
     const viewMode = ref("grid");
@@ -511,9 +511,19 @@ export default {
       }
     }
 
+    // Track active fetch to cancel stale requests
+    let activePlaylistFetchId = 0;
+
     async function openPlaylistDetail(playlistId) {
+      // Cancel any pending close animation and clear old data immediately
+      clearPlaylistModalData();
+
+      const fetchId = ++activePlaylistFetchId;
+
       try {
         isLoading.value = true;
+        // Show modal immediately with loading state
+        showDetailModal.value = true;
 
         const response = await fetch(`/api/media/playlists/${playlistId}`, {
           headers: {
@@ -522,33 +532,46 @@ export default {
           },
         });
 
+        // Abort if a newer playlist was opened while we were fetching
+        if (fetchId !== activePlaylistFetchId) return;
+
         if (!response.ok) {
           alertStore.error(t("playlist.loadError"));
+          showDetailModal.value = false;
           return;
         }
 
         const data = await response.json();
+
+        // Abort if a newer playlist was opened while we were parsing
+        if (fetchId !== activePlaylistFetchId) return;
+
         currentPlaylistDetail.value = data.playlist;
         playlistSongs.value = data.songs || [];
-
-        // Open the modal
-        showDetailModal.value = true;
       } catch (error) {
+        if (fetchId !== activePlaylistFetchId) return;
         console.error("Error opening playlist:", error);
         alertStore.error(t("playlist.loadError"));
+        showDetailModal.value = false;
       } finally {
-        isLoading.value = false;
+        if (fetchId === activePlaylistFetchId) {
+          isLoading.value = false;
+        }
       }
+    }
+
+    function clearPlaylistModalData() {
+      playlistSongs.value = [];
+      currentPlaylistDetail.value = null;
+      selectedPlaylist.value = null;
+      isEditMode.value = false;
+      editablePlaylistSongs.value = [];
+      editablePlaylist.value = { name: "", description: "" };
     }
 
     function closeDetailModal() {
       showDetailModal.value = false;
-      selectedPlaylist.value = null;
-      playlistSongs.value = [];
-      currentPlaylistDetail.value = null;
-      isEditMode.value = false;
-      editablePlaylistSongs.value = [];
-      editablePlaylist.value = { name: "", description: "" };
+      clearPlaylistModalData();
     }
 
     function closeAllModals() {
@@ -557,12 +580,7 @@ export default {
       showPlaylistModal.value = false;
       showPermissionsModal.value = false;
       showDetailModal.value = false;
-      currentPlaylistDetail.value = null;
-      selectedPlaylist.value = null;
-      playlistSongs.value = [];
-      isEditMode.value = false;
-      editablePlaylistSongs.value = [];
-      editablePlaylist.value = { name: "", description: "" };
+      clearPlaylistModalData();
     }
 
     // Player functions for the detail modal
@@ -579,9 +597,7 @@ export default {
     async function addPlaylistToQueueFromDetail() {
       try {
         if (playlistSongs.value.length > 0) {
-          playlistSongs.value.forEach((song) => {
-            playerStore.addToQueue(song);
-          });
+          playerStore.addMultipleToQueue(playlistSongs.value);
         }
       } catch (err) {
         console.error("Error adding playlist to queue:", err);
@@ -724,9 +740,7 @@ export default {
             currentPlaylistDetail.value.playlist_id === playlistId) &&
           playlistSongs.value.length > 0
         ) {
-          playlistSongs.value.forEach((song) => {
-            playerStore.addToQueue(song);
-          });
+          playerStore.addMultipleToQueue(playlistSongs.value);
           alertStore.success(
             t("playlist.addedToQueue", {
               name: currentPlaylistDetail.value?.name || "Playlist",
@@ -756,9 +770,7 @@ export default {
           return;
         }
 
-        songs.forEach((song) => {
-          playerStore.addToQueue(song);
-        });
+        playerStore.addMultipleToQueue(songs);
         alertStore.success(t("playlist.addedToQueue", { name: "Playlist" }));
       } catch (err) {
         console.error("Error adding playlist to queue:", err);
@@ -935,16 +947,15 @@ export default {
         // Remove from server immediately
         await playlistStore.removeSongFromPlaylist(playlistId, songId);
 
-        // Remove from editable list
-        editablePlaylistSongs.value.splice(index, 1);
+        // Remove from editable list (replace array for shallowRef reactivity)
+        editablePlaylistSongs.value = editablePlaylistSongs.value.filter(
+          (_, i) => i !== index,
+        );
 
         // Also remove from main playlist songs array to keep them in sync
-        const songIndex = playlistSongs.value.findIndex(
-          (s) => (s.id || s.song_id) === songId,
+        playlistSongs.value = playlistSongs.value.filter(
+          (s) => (s.id || s.song_id) !== songId,
         );
-        if (songIndex !== -1) {
-          playlistSongs.value.splice(songIndex, 1);
-        }
 
         alertStore.success(t("playlist.songRemoved"));
       } catch (error) {
@@ -1094,7 +1105,13 @@ export default {
         });
 
         if (response) {
-          song.is_favorite = !song.is_favorite;
+          // Replace array to trigger shallowRef reactivity
+          const songId = song.id || song.song_id;
+          playlistSongs.value = playlistSongs.value.map((s) =>
+            (s.id || s.song_id) === songId
+              ? { ...s, is_favorite: !s.is_favorite }
+              : s,
+          );
         }
       } catch (error) {
         console.error("Error toggling song favorite:", error);
@@ -1126,36 +1143,8 @@ export default {
     }
 
     async function loadAndOpenPlaylistDetail(playlistId) {
-      try {
-        isLoading.value = true;
-        const response = await fetch(`/api/media/playlists/${playlistId}`, {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          alertStore.error(t("playlist.loadError"));
-          closeAllModals();
-          return;
-        }
-
-        const data = await response.json();
-        currentPlaylistDetail.value = data.playlist;
-        playlistSongs.value = data.songs || [];
-
-        // Ensure local modal is also opened
-        showDetailModal.value = true;
-      } catch (err) {
-        console.error("Error loading playlist detail:", err);
-        alertStore.error(t("playlist.loadError"));
-
-        // Reset global state on error
-        closeAllModals();
-      } finally {
-        isLoading.value = false;
-      }
+      // Delegate to openPlaylistDetail which handles race conditions
+      await openPlaylistDetail(playlistId);
     }
 
     // Watch for URL parameters to open playlist from navigation

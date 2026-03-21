@@ -663,9 +663,7 @@ async function addAlbumToQueue(album) {
       albumResponse.tracks || albumResponse.data || albumResponse || [];
 
     if (songs && songs.length > 0) {
-      songs.forEach((song) => {
-        playerStore.addToQueue(song);
-      });
+      playerStore.addMultipleToQueue(songs);
       alertStore.success(t("songs.addedToQueue", { count: songs.length }));
     }
   } catch (error) {

@@ -609,53 +609,44 @@ export const usePlayerStore = defineStore("player", {
     },
 
     addToQueue(song) {
-      const songId = song.song_id || song.id;
-      // Prüfe gegen originalOrderQueue, da dies die "Master"-Liste der einzigartigen Songs sein soll.
-      if (
-        !this.originalOrderQueue.find((q) => (q.song_id || q.id) === songId)
-      ) {
-        this.originalOrderQueue.push(song); // Füge zur Master-Liste hinzu
+      this.addMultipleToQueue([song]);
+    },
 
-        // Aktualisiere actualPlayQueue basierend auf Shuffle-Status
-        if (this.isShuffleEnabled) {
-          // Behalte den aktuellen Song bei, wenn möglich
-          const songToMaintain = this.currentSong;
-          this.actualPlayQueue = shuffleArrayInternal([
-            ...this.originalOrderQueue,
-          ]);
-          if (songToMaintain) {
-            const newIndexOfMaintainedSong = this.actualPlayQueue.findIndex(
-              (s) =>
-                (s.song_id || s.id) ===
-                (songToMaintain.song_id || songToMaintain.id),
-            );
-            if (newIndexOfMaintainedSong !== -1) {
-              this.currentSongIndexInActualPlayQueue = newIndexOfMaintainedSong;
-            } else {
-              // Aktueller Song wurde durch Hinzufügen entfernt (sollte nicht passieren) oder war nicht in original
-              this.currentSongIndexInActualPlayQueue =
-                this.actualPlayQueue.length > 0 ? 0 : -1; // Fallback
-            }
-          } else {
-            // Wenn kein Song spielte, currentSongIndexInActualPlayQueue bleibt (oder wird -1 wenn actualPlayQueue leer)
-            // Es wird nicht automatisch ein Song gestartet, nur weil einer hinzugefügt wurde.
-            if (
-              this.actualPlayQueue.length > 0 &&
-              this.currentSongIndexInActualPlayQueue === -1
-            ) {
-              // Spezialfall: Queue war leer, erster Song hinzugefügt, Shuffle an -> Index auf 0
-              // Aber nicht automatisch spielen. Das macht playSong, wenn es explizit aufgerufen wird.
-              this.currentSongIndexInActualPlayQueue = 0;
-            }
-          }
-        } else {
-          // actualPlayQueue sollte eine Referenz auf (oder Kopie von) originalOrderQueue sein.
-          // Da originalOrderQueue bereits aktualisiert wurde, aktualisiere actualPlayQueue.
-          this.actualPlayQueue = [...this.originalOrderQueue];
-          // currentSongIndexInActualPlayQueue muss nicht angepasst werden, wenn hinten angefügt wird
-          // und der aktuelle Song nicht betroffen ist.
+    // Batch-add songs to queue — triggers reactivity only ONCE
+    addMultipleToQueue(songs) {
+      const existingIds = new Set(
+        this.originalOrderQueue.map((q) => q.song_id || q.id),
+      );
+      const newSongs = songs.filter(
+        (s) => !existingIds.has(s.song_id || s.id),
+      );
+      if (newSongs.length === 0) return;
+
+      // Add all new songs at once
+      this.originalOrderQueue.push(...newSongs);
+
+      // Update actualPlayQueue once
+      if (this.isShuffleEnabled) {
+        const songToMaintain = this.currentSong;
+        this.actualPlayQueue = shuffleArrayInternal([
+          ...this.originalOrderQueue,
+        ]);
+        if (songToMaintain) {
+          const newIndex = this.actualPlayQueue.findIndex(
+            (s) =>
+              (s.song_id || s.id) ===
+              (songToMaintain.song_id || songToMaintain.id),
+          );
+          this.currentSongIndexInActualPlayQueue =
+            newIndex !== -1 ? newIndex : this.actualPlayQueue.length > 0 ? 0 : -1;
+        } else if (
+          this.actualPlayQueue.length > 0 &&
+          this.currentSongIndexInActualPlayQueue === -1
+        ) {
+          this.currentSongIndexInActualPlayQueue = 0;
         }
       } else {
+        this.actualPlayQueue = [...this.originalOrderQueue];
       }
     },
 

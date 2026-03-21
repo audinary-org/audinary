@@ -771,9 +771,7 @@ export default {
           albumResponse.tracks || albumResponse.data || albumResponse || [];
 
         if (songs && songs.length > 0) {
-          songs.forEach((song) => {
-            playerStore.addToQueue(song);
-          });
+          playerStore.addMultipleToQueue(songs);
           alertStore.success(t("songs.addedToQueue", { count: songs.length }));
         }
       } catch (error) {
@@ -932,9 +930,7 @@ export default {
           playerStore.playSong(songsToQueue[0]);
 
           // Add remaining songs to queue
-          for (let i = 1; i < songsToQueue.length; i++) {
-            playerStore.addToQueue(songsToQueue[i]);
-          }
+          playerStore.addMultipleToQueue(songsToQueue.slice(1));
 
           const count = songsToQueue.length;
           alertStore.success(t("albums.playingRandomSongs", { count }));
