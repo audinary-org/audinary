@@ -35,7 +35,8 @@
     "saving": "Speichere...",
     "verifying": "Überprüfe...",
     "scroll_for_more": "Für mehr scrollen",
-    "no_songs": "Keine Songs gefunden"
+    "no_songs": "Keine Songs gefunden",
+    "clear_filters": "Filter zurücksetzen"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -199,8 +200,7 @@
     "confirmRemoveUser": "Möchten Sie diesen Benutzer wirklich entfernen?",
     "userRemoved": "Benutzer entfernt",
     "removeUserError": "Fehler beim Entfernen des Benutzers",
-    "removeSongError": "Fehler beim Entfernen des Songs",
-    "smartPlaylist": "Smart Playlist"
+    "removeSongError": "Fehler beim Entfernen des Songs"
   },
   "player": {
     "play": "Abspielen",
@@ -472,28 +472,6 @@
       "list_missing_artist_images": "Fehlende Künstlerbilder auflisten",
       "list_missing_cover_images": "Fehlende Cover-Bilder auflisten"
     },
-    "playlists": {
-      "global_playlists": "Globale Playlists",
-      "manage_desc": "Verwaltung von systemweiten und öffentlichen Playlists",
-      "global_management": "Globale Playlist-Verwaltung",
-      "feature_desc": "Diese Seite ist für zukünftige Features zur Verwaltung von globalen und systemweiten Playlists vorgesehen.",
-      "planned_features": "Geplante Features:",
-      "create_system_playlists": "Systemweite Playlists erstellen",
-      "manage_public_playlists": "Öffentliche Playlists verwalten",
-      "curate_featured": "Featured Playlists kuratieren",
-      "define_categories": "Playlist-Kategorien definieren",
-      "admin_functions": "Admin-Funktionen:",
-      "playlist_moderation": "Playlist-Moderierung",
-      "global_settings": "Globale Playlist-Einstellungen",
-      "playlist_statistics": "Playlist-Statistiken",
-      "bulk_operations": "Bulk-Operationen",
-      "note": "Hinweis:",
-      "user_playlists_note": "Benutzer-Playlists werden weiterhin in der Hauptanwendung verwaltet. Diese Seite ist nur für systemweite und administrative Playlist-Features gedacht.",
-      "global_playlists_count": "Globale Playlists",
-      "public_playlists": "Öffentliche Playlists",
-      "featured_playlists": "Featured Playlists",
-      "categories": "Kategorien"
-    },
     "stats": {
       "title": "Statistiken Teilen",
       "privacy_notice_title": "Statistiken Teilen ist standardmäßig DEAKTIVIERT",
@@ -586,7 +564,6 @@
       "matchAny": "Eine Regel muss zutreffen (ODER)",
       "rules": "Regeln",
       "addRule": "Regel hinzufügen",
-      "ruleCount": "{count} Regel | {count} Regeln",
       "sorting": "Sortierung",
       "sortDefault": "Standard (Künstler/Album)",
       "sortDirection": "Richtung",

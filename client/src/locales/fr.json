@@ -35,7 +35,8 @@
     "saving": "Enregistrement...",
     "verifying": "Vérification...",
     "scroll_for_more": "Faire défiler pour plus",
-    "no_songs": "Aucune chanson trouvée"
+    "no_songs": "Aucune chanson trouvée",
+    "clear_filters": "Réinitialiser les filtres"
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -49,6 +50,7 @@
     "about": "À propos",
     "logout": "Déconnexion",
     "shares": "Partages",
+    "wishlist": "Liste de souhaits",
     "settings": "Paramètres"
   },
   "search": {
@@ -198,8 +200,7 @@
     "confirmRemoveUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
     "userRemoved": "Utilisateur supprimé",
     "removeUserError": "Erreur lors de la suppression de l'utilisateur",
-    "removeSongError": "Erreur lors de la suppression de la chanson",
-    "smartPlaylist": "Playlist intelligente"
+    "removeSongError": "Erreur lors de la suppression de la chanson"
   },
   "player": {
     "play": "Lire",
@@ -471,28 +472,6 @@
       "list_missing_artist_images": "Lister les images d'artistes manquantes",
       "list_missing_cover_images": "Lister les images de couverture manquantes"
     },
-    "playlists": {
-      "global_playlists": "Listes de lecture globales",
-      "manage_desc": "Gestion des listes de lecture système et publiques",
-      "global_management": "Gestion des listes de lecture globales",
-      "feature_desc": "Cette page est réservée aux futures fonctionnalités de gestion des listes de lecture globales et système.",
-      "planned_features": "Fonctionnalités prévues :",
-      "create_system_playlists": "Créer des listes de lecture système",
-      "manage_public_playlists": "Gérer les listes de lecture publiques",
-      "curate_featured": "Organiser les listes de lecture en vedette",
-      "define_categories": "Définir les catégories de listes de lecture",
-      "admin_functions": "Fonctions d'administration :",
-      "playlist_moderation": "Modération des listes de lecture",
-      "global_settings": "Paramètres globaux des listes de lecture",
-      "playlist_statistics": "Statistiques des listes de lecture",
-      "bulk_operations": "Opérations en lot",
-      "note": "Note :",
-      "user_playlists_note": "Les listes de lecture utilisateur continuent d'être gérées dans l'application principale. Cette page est uniquement pour les fonctionnalités système et administratives.",
-      "global_playlists_count": "Listes de lecture globales",
-      "public_playlists": "Listes de lecture publiques",
-      "featured_playlists": "Listes de lecture en vedette",
-      "categories": "Catégories"
-    },
     "stats": {
       "title": "Partager les statistiques",
       "privacy_notice_title": "Le partage des statistiques est DÉSACTIVÉ PAR DÉFAUT",
@@ -585,7 +564,6 @@
       "matchAny": "Une règle doit correspondre (OU)",
       "rules": "Règles",
       "addRule": "Ajouter une règle",
-      "ruleCount": "{count} règle | {count} règles",
       "sorting": "Tri",
       "sortDefault": "Par défaut (Artiste/Album)",
       "sortDirection": "Direction",
@@ -635,6 +613,33 @@
         "durationOp": "Durée {op} {min}min",
         "and": "ET",
         "or": "OU"
+      }
+    },
+    "wishlist": {
+      "title": "Liste de souhaits",
+      "loading": "Chargement des souhaits...",
+      "no_items": "Aucun souhait disponible",
+      "pending_notification": "{count} souhaits ouverts dans la liste",
+      "update_status": "Mettre à jour le statut",
+      "status": "Statut",
+      "admin_comment": "Commentaire admin",
+      "admin_comment_placeholder": "ex. Arrive la semaine prochaine...",
+      "requested_by": "Demandé par",
+      "update_success": "Statut mis à jour avec succès",
+      "update_error": "Erreur lors de la mise à jour du statut",
+      "delete_confirm": "Voulez-vous vraiment supprimer ce souhait ?",
+      "delete_success": "Souhait supprimé avec succès",
+      "delete_error": "Erreur lors de la suppression du souhait",
+      "load_error": "Erreur lors du chargement des souhaits",
+      "edit_status": "Modifier le statut",
+      "stats": {
+        "pending": "En attente",
+        "in_progress": "En cours",
+        "completed": "Terminé",
+        "rejected": "Rejeté"
+      },
+      "filter": {
+        "all": "Tous"
       }
     }
   },
@@ -704,5 +709,50 @@
     "error": "Une erreur s'est produite",
     "share_album": "Partager l'album",
     "share_song": "Partager la chanson"
+  },
+  "wishlist": {
+    "title": "Liste de souhaits",
+    "new_wish": "Nouveau souhait",
+    "edit_wish": "Modifier le souhait",
+    "add_wish": "Ajouter un souhait",
+    "loading": "Chargement de la liste de souhaits...",
+    "empty": "Votre liste de souhaits est vide",
+    "empty_hint": "Ajoutez votre premier souhait musical !",
+    "search_lastfm": "Recherche Last.fm",
+    "manual_entry": "Saisie manuelle",
+    "search_artist": "Artiste",
+    "search_album": "Album",
+    "search_artist_placeholder": "Rechercher un artiste...",
+    "search_album_placeholder": "Rechercher un album...",
+    "search_placeholder": "Rechercher un artiste ou un album...",
+    "searching": "Recherche en cours...",
+    "artist": "Artiste",
+    "artist_placeholder": "ex. The Beatles",
+    "album": "Album",
+    "album_placeholder": "ex. Abbey Road (optionnel)",
+    "comment": "Commentaire",
+    "comment_placeholder": "ex. J'aimerais bien écouter ça...",
+    "admin_note": "Note d'admin",
+    "created": "Créé",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "delete_confirm": "Voulez-vous vraiment supprimer ce souhait ?",
+    "delete_success": "Souhait supprimé avec succès",
+    "delete_error": "Erreur lors de la suppression du souhait",
+    "add_success": "Souhait ajouté avec succès",
+    "update_success": "Souhait mis à jour avec succès",
+    "save_error": "Erreur lors de l'enregistrement du souhait",
+    "load_error": "Erreur lors du chargement de la liste de souhaits",
+    "search_error": "Erreur lors de la recherche Last.fm",
+    "status": {
+      "pending": "En attente",
+      "in_progress": "En cours",
+      "completed": "Terminé",
+      "rejected": "Rejeté"
+    },
+    "filter": {
+      "active": "Actif",
+      "all": "Tous"
+    }
   }
 }

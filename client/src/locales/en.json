@@ -35,7 +35,8 @@
     "saving": "Saving...",
     "verifying": "Verifying...",
     "scroll_for_more": "Scroll for more",
-    "no_songs": "No songs found"
+    "no_songs": "No songs found",
+    "clear_filters": "Clear filters"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -49,6 +50,7 @@
     "about": "About",
     "logout": "Logout",
     "shares": "Shares",
+    "wishlist": "Wishlist",
     "settings": "Settings"
   },
   "search": {
@@ -198,8 +200,7 @@
     "confirmRemoveUser": "Are you sure you want to remove this user?",
     "userRemoved": "User removed",
     "removeUserError": "Error removing user",
-    "removeSongError": "Error removing song",
-    "smartPlaylist": "Smart Playlist"
+    "removeSongError": "Error removing song"
   },
   "player": {
     "play": "Play",
@@ -538,28 +539,6 @@
       "list_missing_artist_images": "List Missing Artist Images",
       "list_missing_cover_images": "List Missing Cover Images"
     },
-    "playlists": {
-      "global_playlists": "Global Playlists",
-      "manage_desc": "Management of system-wide and public playlists",
-      "global_management": "Global Playlist Management",
-      "feature_desc": "This page is reserved for future features to manage global and system-wide playlists.",
-      "planned_features": "Planned Features:",
-      "create_system_playlists": "Create system-wide playlists",
-      "manage_public_playlists": "Manage public playlists",
-      "curate_featured": "Curate featured playlists",
-      "define_categories": "Define playlist categories",
-      "admin_functions": "Admin Functions:",
-      "playlist_moderation": "Playlist moderation",
-      "global_settings": "Global playlist settings",
-      "playlist_statistics": "Playlist statistics",
-      "bulk_operations": "Bulk operations",
-      "note": "Note:",
-      "user_playlists_note": "User playlists continue to be managed in the main application. This page is only for system-wide and administrative playlist features.",
-      "global_playlists_count": "Global Playlists",
-      "public_playlists": "Public Playlists",
-      "featured_playlists": "Featured Playlists",
-      "categories": "Categories"
-    },
     "stats": {
       "title": "Share Statistics",
       "privacy_notice_title": "Statistics sharing is DISABLED BY DEFAULT",
@@ -652,7 +631,6 @@
       "matchAny": "Any rule must match (OR)",
       "rules": "Rules",
       "addRule": "Add rule",
-      "ruleCount": "{count} rule | {count} rules",
       "sorting": "Sorting",
       "sortDefault": "Default (Artist/Album)",
       "sortDirection": "Direction",
@@ -703,6 +681,78 @@
         "and": "AND",
         "or": "OR"
       }
+    },
+    "wishlist": {
+      "title": "Wishlist",
+      "loading": "Loading wishes...",
+      "no_items": "No wishes available",
+      "pending_notification": "{count} open wishes in the wishlist",
+      "update_status": "Update Status",
+      "status": "Status",
+      "admin_comment": "Admin Comment",
+      "admin_comment_placeholder": "e.g. Coming next week...",
+      "requested_by": "Requested by",
+      "update_success": "Status successfully updated",
+      "update_error": "Error updating status",
+      "delete_confirm": "Do you really want to delete this wish?",
+      "delete_success": "Wish successfully deleted",
+      "delete_error": "Error deleting wish",
+      "load_error": "Error loading wishes",
+      "edit_status": "Edit Status",
+      "stats": {
+        "pending": "Pending",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "rejected": "Rejected"
+      },
+      "filter": {
+        "all": "All"
+      }
+    }
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "new_wish": "New Wish",
+    "edit_wish": "Edit Wish",
+    "add_wish": "Add Wish",
+    "loading": "Loading wishlist...",
+    "empty": "Your wishlist is empty",
+    "empty_hint": "Add your first music wish!",
+    "search_lastfm": "Last.fm Search",
+    "manual_entry": "Manual Entry",
+    "search_artist": "Artist",
+    "search_album": "Album",
+    "search_artist_placeholder": "Search for artist...",
+    "search_album_placeholder": "Search for album...",
+    "search_placeholder": "Search for artist or album...",
+    "searching": "Searching...",
+    "artist": "Artist",
+    "artist_placeholder": "e.g. The Beatles",
+    "album": "Album",
+    "album_placeholder": "e.g. Abbey Road (optional)",
+    "comment": "Comment",
+    "comment_placeholder": "e.g. Would love to listen to this...",
+    "admin_note": "Admin Note",
+    "created": "Created",
+    "edit": "Edit",
+    "delete": "Delete",
+    "delete_confirm": "Do you really want to delete this wish?",
+    "delete_success": "Wish successfully deleted",
+    "delete_error": "Error deleting wish",
+    "add_success": "Wish successfully added",
+    "update_success": "Wish successfully updated",
+    "save_error": "Error saving wish",
+    "load_error": "Error loading wishlist",
+    "search_error": "Error with Last.fm search",
+    "status": {
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "rejected": "Rejected"
+    },
+    "filter": {
+      "active": "Active",
+      "all": "All"
     }
   }
 }
