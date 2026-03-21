@@ -99,26 +99,32 @@ final class SmartPlaylistRepository
 
     /**
      * Get song count and total duration for a smart playlist.
+     * Respects the effective limit (min of smart_limit and max 250).
      *
      * @param array<string, mixed> $rules
      * @return array{song_count: int, duration: int}
      */
-    public function getSmartPlaylistStats(array $rules, ?string $userId): array
+    public function getSmartPlaylistStats(array $rules, ?string $userId, ?int $limit = null): array
     {
         $bindParams = [];
         $whereClause = $this->buildSmartWhereClause($rules, $bindParams, $userId);
 
+        $maxLimit = 250;
+        $effectiveLimit = $limit !== null && $limit > 0 ? min($limit, $maxLimit) : $maxLimit;
+
         $sql = "
-            SELECT
-                COUNT(*) as song_count,
-                COALESCE(SUM(s.duration), 0) as duration
-            FROM songs s
-            JOIN albums a ON s.album_id = a.album_id
-            LEFT JOIN favorites f ON s.song_id = f.song_id
-                AND f.favorite_type = 'song'
-                AND f.user_id = :fav_user_id
-            WHERE s.is_deleted = 0 AND a.is_deleted = 0
-            {$whereClause}
+            SELECT COUNT(*) as song_count, COALESCE(SUM(duration), 0) as duration
+            FROM (
+                SELECT s.duration
+                FROM songs s
+                JOIN albums a ON s.album_id = a.album_id
+                LEFT JOIN favorites f ON s.song_id = f.song_id
+                    AND f.favorite_type = 'song'
+                    AND f.user_id = :fav_user_id
+                WHERE s.is_deleted = 0 AND a.is_deleted = 0
+                {$whereClause}
+                LIMIT :stats_limit
+            ) sub
         ";
 
         $bindParams[':fav_user_id'] = $userId;
@@ -134,6 +140,7 @@ final class SmartPlaylistRepository
                 $stmt->bindValue($key, $value);
             }
         }
+        $stmt->bindValue(':stats_limit', $effectiveLimit, PDO::PARAM_INT);
 
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);

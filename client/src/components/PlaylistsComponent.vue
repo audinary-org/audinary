@@ -156,9 +156,6 @@
               >
                 {{ playlist.name }}
               </p>
-              <p v-if="playlist.type === 'smart'" class="text-center text-purple-400 text-xs mb-1">
-                <i class="bi bi-lightning-fill text-yellow-300"></i> {{ $t('playlist.smartPlaylist') }}
-              </p>
               <p class="text-center text-white/80 text-xs truncate mb-1">
                 {{ playlist.song_count || 0 }} {{ $t("common.songs") }}
                 <span v-if="playlist.duration">

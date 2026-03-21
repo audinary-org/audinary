@@ -71,11 +71,22 @@ final class PlaylistController
             $playlists = $playlistService->getUserPlaylists($offset, $limit);
             $count = $playlistService->countUserPlaylists();
 
-            // Also include smart playlists (system-wide)
+            // Also include smart playlists (system-wide) with live song counts
             $smartPlaylists = $playlistService->getSmartPlaylists();
+            $smartPlaylistsArray = [];
+            foreach ($smartPlaylists as $sp) {
+                $spArray = $sp->toArray();
+                $rules = $sp->getRules();
+                if (is_array($rules) && !empty($rules['conditions'])) {
+                    $stats = $playlistService->getSmartPlaylistStats($rules, $sp->getSmartLimit());
+                    $spArray['song_count'] = $stats['song_count'];
+                    $spArray['duration'] = $stats['duration'];
+                }
+                $smartPlaylistsArray[] = $spArray;
+            }
 
             $allPlaylists = array_merge(
-                array_map(fn($p) => $p->toArray(), $smartPlaylists),
+                $smartPlaylistsArray,
                 array_map(fn($p) => $p->toArray(), $playlists)
             );
 

@@ -249,13 +249,14 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm text-gray-300 mb-2">Max. Songs (optional)</label>
+            <label class="block text-sm text-gray-300 mb-2">Max. Songs (max. 250)</label>
             <input
               type="number"
               v-model.number="form.smart_limit"
               class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-full"
-              placeholder="Unbegrenzt"
+              placeholder="250"
               min="1"
+              max="250"
             />
           </div>
         </div>
@@ -646,7 +647,7 @@ async function savePlaylist() {
       rules,
       smart_sort_by: form.value.smart_sort_by || null,
       smart_sort_direction: form.value.smart_sort_direction,
-      smart_limit: form.value.smart_limit || null,
+      smart_limit: form.value.smart_limit ? Math.min(form.value.smart_limit, 250) : null,
     };
 
     let res;

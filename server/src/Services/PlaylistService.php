@@ -101,7 +101,7 @@ final class PlaylistService
                 $this->userId
             );
 
-            $stats = $this->smartPlaylistRepository->getSmartPlaylistStats($rules, $this->userId);
+            $stats = $this->smartPlaylistRepository->getSmartPlaylistStats($rules, $this->userId, $playlist->getSmartLimit());
             $playlistArray = $playlist->toArray();
             $playlistArray['song_count'] = $stats['song_count'];
             $playlistArray['duration'] = $stats['duration'];
@@ -127,6 +127,16 @@ final class PlaylistService
     public function getSmartPlaylists(): array
     {
         return $this->playlistRepository->findAllSmart();
+    }
+
+    /**
+     * Get stats (song_count, duration) for a smart playlist's rules
+     * @param array<string, mixed> $rules
+     * @return array{song_count: int, duration: int}
+     */
+    public function getSmartPlaylistStats(array $rules, ?int $limit = null): array
+    {
+        return $this->smartPlaylistRepository->getSmartPlaylistStats($rules, $this->userId, $limit);
     }
 
     /**

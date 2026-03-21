@@ -412,6 +412,7 @@ import { ref, watch, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePlayerStore } from "@/stores/player";
 import { useThemeStore } from "@/stores/theme";
+import { useAlertStore } from "@/stores/alert";
 import draggable from "vuedraggable";
 import SoundWaveAnimation from "@/components/common/SoundWaveAnimation.vue";
 import SimpleImage from "@/components/common/SimpleImage.vue";
@@ -487,6 +488,7 @@ export default {
     const { t } = useI18n();
     const playerStore = usePlayerStore();
     const themeStore = useThemeStore();
+    const alertStore = useAlertStore();
 
     // Animation state
     const isOpening = ref(false);
@@ -557,7 +559,26 @@ export default {
     };
 
     const playSong = (song) => {
-      emit("play-song", song);
+      playerStore.playSong(song);
+
+      // Add remaining songs from playlist to queue
+      const songId = song.id || song.song_id;
+      const selectedIndex = props.playlistSongs.findIndex(
+        (s) => (s.id || s.song_id) === songId,
+      );
+
+      if (selectedIndex !== -1 && selectedIndex < props.playlistSongs.length - 1) {
+        const remainingTracks = props.playlistSongs.slice(selectedIndex + 1);
+        remainingTracks.forEach((track) => {
+          playerStore.addToQueue(track);
+        });
+
+        if (remainingTracks.length > 0) {
+          alertStore.info(
+            t("player.addedToQueue", { name: `${remainingTracks.length} Songs` }),
+          );
+        }
+      }
     };
 
     const addSongToQueue = (song) => {

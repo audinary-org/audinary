@@ -1493,7 +1493,7 @@ final class AdminController
                 $data = $playlist->toArray();
                 $rules = $playlist->getRules();
                 if (is_array($rules) && !empty($rules['conditions'])) {
-                    $stats = $smartRepo->getSmartPlaylistStats($rules, null);
+                    $stats = $smartRepo->getSmartPlaylistStats($rules, null, $playlist->getSmartLimit());
                     $data['song_count'] = $stats['song_count'];
                     $data['duration'] = $stats['duration'];
                 }
@@ -1619,7 +1619,8 @@ final class AdminController
             }
 
             $smartRepo = new SmartPlaylistRepository();
-            $stats = $smartRepo->getSmartPlaylistStats($data['rules'], null);
+            $previewLimit = isset($data['smart_limit']) && $data['smart_limit'] > 0 ? (int) $data['smart_limit'] : null;
+            $stats = $smartRepo->getSmartPlaylistStats($data['rules'], null, $previewLimit);
 
             return $this->createJsonResponse($response, [
                 'success' => true,
