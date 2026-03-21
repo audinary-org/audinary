@@ -610,6 +610,13 @@ export default {
     const closeModal = () => {
       isClosing.value = true;
       setTimeout(() => {
+        // Clear data to free memory
+        tracks.value = [];
+        selectedTrack.value = null;
+        showPlaylistModal.value = false;
+        showAlbumPlaylistModal.value = false;
+        activeDropdown.value = null;
+
         emit("close");
         // Reset animation states after closing
         isClosing.value = false;
@@ -622,6 +629,12 @@ export default {
       () => props.album,
       (newAlbum) => {
         if (newAlbum) {
+          // Clear previous album data immediately to free memory
+          tracks.value = [];
+          selectedTrack.value = null;
+          showPlaylistModal.value = false;
+          showAlbumPlaylistModal.value = false;
+
           // Reset animation states when a new album is opened
           isClosing.value = false;
           isOpening.value = false;
