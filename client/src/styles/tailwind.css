@@ -26,3 +26,39 @@
 [class*="backdrop-blur"][class*="transition-all"] {
   transition-property: background-color, transform, opacity, box-shadow;
 }
+
+/* Dark theme form selects */
+select {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  padding-right: 2rem;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(250, 186, 44, 0.4);
+  border-color: rgba(250, 186, 44, 0.6);
+}
+
+select option {
+  background-color: #111827;
+  color: #f3f4f6;
+  padding: 0.5rem;
+}
+
+select option:checked {
+  background-color: #1f2937;
+  color: #faba2c;
+}
+
+select option:hover {
+  background-color: #1f2937;
+}

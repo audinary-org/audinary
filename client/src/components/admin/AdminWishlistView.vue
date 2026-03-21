@@ -192,7 +192,7 @@
               </label>
               <select
                 v-model="editForm.status"
-                class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-audinary"
+                class="w-full"
               >
                 <option value="pending">
                   {{ $t("wishlist.status.pending") }}

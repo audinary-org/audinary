@@ -53,7 +53,7 @@
               <div class="flex gap-2 mt-2 items-center">
                 <select
                   v-model="activeFilters.sort"
-                  class="bg-white/20 text-white rounded px-2 py-1"
+                  class=""
                   @change="onFiltersChanged"
                 >
                   <option value="artistAndAlbum">
@@ -94,7 +94,7 @@
               <h6 class="text-sm font-medium">{{ $t("nav.genres") }}</h6>
               <select
                 v-model="activeFilters.genre"
-                class="bg-white/20 text-white rounded px-2 py-1 w-full"
+                class="w-full"
                 @change="onFiltersChanged"
               >
                 <option value="">{{ $t("common.all") }}</option>
@@ -112,7 +112,7 @@
               <h6 class="text-sm font-medium">{{ $t("nav.decades") }}</h6>
               <select
                 v-model="activeFilters.decade"
-                class="bg-white/20 text-white rounded px-2 py-1 w-full"
+                class="w-full"
                 @change="onFiltersChanged"
               >
                 <option value="">{{ $t("common.all") }}</option>

@@ -57,7 +57,7 @@
           </label>
           <select
             v-model="shareData.expires_at"
-            class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:border-audinary focus:ring-1 focus:ring-audinary"
+            class="w-full"
           >
             <option :value="null">{{ $t("shares.expiration_never") }}</option>
             <option value="+1 hour">

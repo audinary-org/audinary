@@ -35,7 +35,7 @@
             <select
               v-model="filters.type"
               @change="onFiltersChanged"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
+              class="w-full"
             >
               <option value="">{{ $t("common.all") }}</option>
               <option value="song">{{ $t("shares.sharing_type_song") }}</option>
@@ -56,7 +56,7 @@
             <select
               v-model="filters.status"
               @change="onFiltersChanged"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
+              class="w-full"
             >
               <option value="">{{ $t("common.all") }}</option>
               <option value="active">{{ $t("shares.status.active") }}</option>

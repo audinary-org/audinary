@@ -370,7 +370,7 @@
                     >
                     <select
                       id="smtpEncryption"
-                      class="bg-white/10 text-white border border-white/20 rounded px-3 py-2 w-full"
+                      class="w-full"
                       v-model="settings.smtp_encryption"
                       :disabled="!settings.smtp_enabled"
                     >
@@ -553,7 +553,7 @@
                     >
                     <select
                       id="mpdReplaygain"
-                      class="bg-white/10 text-white border border-white/20 rounded px-3 py-2 w-full"
+                      class="w-full"
                       v-model="settings.mpd_replaygain"
                       :disabled="!settings.mpd_enabled"
                     >

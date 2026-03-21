@@ -133,7 +133,7 @@
                   </label>
                   <select
                     v-model="newUserPermission"
-                    class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
+                    class="w-full"
                   >
                     <option value="view">{{ $t("playlist.viewOnly") }}</option>
                     <option value="edit">{{ $t("playlist.canEdit") }}</option>
@@ -211,7 +211,7 @@
                         $event.target.value,
                       )
                     "
-                    class="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
+                    class="text-sm"
                   >
                     <option value="view">{{ $t("playlist.viewOnly") }}</option>
                     <option value="edit">{{ $t("playlist.canEdit") }}</option>

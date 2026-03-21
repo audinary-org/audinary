@@ -87,7 +87,7 @@
               <!-- Field -->
               <select
                 v-model="rule.field"
-                class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm min-w-[130px]"
+                class="text-sm min-w-[130px]"
                 @change="onFieldChange(index)"
               >
                 <option value="genre">Genre</option>
@@ -103,7 +103,7 @@
               <select
                 v-if="getOperators(rule.field).length > 1"
                 v-model="rule.operator"
-                class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm min-w-[120px]"
+                class="text-sm min-w-[120px]"
               >
                 <option
                   v-for="op in getOperators(rule.field)"
@@ -118,7 +118,7 @@
               <template v-if="rule.field === 'genre'">
                 <select
                   v-model="rule.value"
-                  class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm flex-1"
+                  class="text-sm flex-1"
                 >
                   <option value="" disabled>Genre wählen...</option>
                   <option v-for="g in genres" :key="g.name" :value="g.name">
@@ -130,7 +130,7 @@
               <template v-else-if="rule.field === 'decade'">
                 <select
                   v-model="rule.value"
-                  class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm flex-1"
+                  class="text-sm flex-1"
                 >
                   <option value="" disabled>Jahrzehnt wählen...</option>
                   <option v-for="d in decades" :key="d.start_year" :value="d.start_year">
@@ -225,7 +225,7 @@
             <label class="block text-sm text-gray-300 mb-2">Sortierung</label>
             <select
               v-model="form.smart_sort_by"
-              class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-full"
+              class="text-sm w-full"
             >
               <option value="">Standard (Künstler/Album)</option>
               <option value="title">Titel</option>
@@ -242,7 +242,7 @@
             <label class="block text-sm text-gray-300 mb-2">Richtung</label>
             <select
               v-model="form.smart_sort_direction"
-              class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-full"
+              class="text-sm w-full"
             >
               <option value="asc">Aufsteigend</option>
               <option value="desc">Absteigend</option>

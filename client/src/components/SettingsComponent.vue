@@ -214,7 +214,7 @@
               }}</label>
               <select
                 v-model="formData.sessionTimeout"
-                class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
+                class="w-full"
               >
                 <option value="31536000">
                   {{ $t("settings.session.timeouts.off") }}
@@ -303,7 +303,7 @@
                 }}</label>
                 <select
                   v-model="formData.transcodingFormat"
-                  class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
+                  class="w-full"
                   @change="updateQualityOptions"
                 >
                   <option value="aac">
@@ -325,7 +325,7 @@
                 }}</label>
                 <select
                   v-model="formData.transcodingMode"
-                  class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
+                  class="w-full"
                   @change="updateQualityOptions"
                 >
                   <option value="cbr">
@@ -347,7 +347,7 @@
                 }}</label>
                 <select
                   v-model="formData.transcodingQuality"
-                  class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
+                  class="w-full"
                 >
                   <option
                     v-for="option in qualityOptions"
