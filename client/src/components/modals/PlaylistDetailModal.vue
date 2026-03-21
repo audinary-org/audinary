@@ -575,7 +575,7 @@ export default {
 
         if (remainingTracks.length > 0) {
           alertStore.info(
-            t("player.addedToQueue", { name: `${remainingTracks.length} Songs` }),
+            t("playlist.addedToQueue", { name: `${remainingTracks.length} Songs` }),
           );
         }
       }

@@ -267,11 +267,22 @@ export const useApiStore = defineStore("api", () => {
   }
 
   // Cache management
+  const MAX_CACHE_SIZE = 50;
+
   function getCached(key) {
     return cache.value.get(key);
   }
 
   function setCached(key, data, ttl = 300000) {
+    // Evict expired entries before adding new ones
+    if (cache.value.size >= MAX_CACHE_SIZE) {
+      evictExpiredCache();
+    }
+    // If still at limit, remove oldest entry
+    if (cache.value.size >= MAX_CACHE_SIZE) {
+      const firstKey = cache.value.keys().next().value;
+      cache.value.delete(firstKey);
+    }
     // 5 minutes default
     cache.value.set(key, {
       data,
@@ -281,7 +292,24 @@ export const useApiStore = defineStore("api", () => {
 
   function isCacheValid(key) {
     const cached = cache.value.get(key);
-    return cached && cached.expires > Date.now();
+    if (cached && cached.expires <= Date.now()) {
+      cache.value.delete(key);
+      return false;
+    }
+    return !!cached;
+  }
+
+  function evictExpiredCache() {
+    const now = Date.now();
+    for (const [key, entry] of cache.value) {
+      if (entry.expires <= now) {
+        cache.value.delete(key);
+      }
+    }
+  }
+
+  function clearCache() {
+    cache.value.clear();
   }
 
   return {
@@ -302,6 +330,9 @@ export const useApiStore = defineStore("api", () => {
     getAssetUrl,
     getPlaySongUrl,
     playSongSrc,
+
+    // Cache
+    clearCache,
 
     // Other methods
     logPlayedSong,

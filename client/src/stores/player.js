@@ -1661,8 +1661,13 @@ export const usePlayerStore = defineStore("player", {
 
     // Event listeners
     setupEventListeners() {
+      // Remove previous keydown listener if it exists (prevent stacking)
+      if (this._keydownHandler) {
+        document.removeEventListener("keydown", this._keydownHandler);
+      }
+
       // Listen for keyboard shortcuts
-      document.addEventListener("keydown", (event) => {
+      this._keydownHandler = (event) => {
         if (
           event.target.tagName === "INPUT" ||
           event.target.tagName === "TEXTAREA"
@@ -1687,7 +1692,8 @@ export const usePlayerStore = defineStore("player", {
             }
             break;
         }
-      });
+      };
+      document.addEventListener("keydown", this._keydownHandler);
     },
 
     // State persistence
@@ -1841,9 +1847,15 @@ export const usePlayerStore = defineStore("player", {
 
     destroy() {
       // Clean up event listeners when store is destroyed
-      if (typeof window !== "undefined" && this.logoutHandler) {
-        window.removeEventListener("user-logged-out", this.logoutHandler);
-        this.logoutHandler = null;
+      if (typeof window !== "undefined") {
+        if (this.logoutHandler) {
+          window.removeEventListener("user-logged-out", this.logoutHandler);
+          this.logoutHandler = null;
+        }
+        if (this._keydownHandler) {
+          document.removeEventListener("keydown", this._keydownHandler);
+          this._keydownHandler = null;
+        }
       }
       this.clearAllIntervals();
       this.stop();

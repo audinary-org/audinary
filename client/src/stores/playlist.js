@@ -194,38 +194,6 @@ export const usePlaylistStore = defineStore("playlist", () => {
     }
   }
 
-  async function deletePlaylist(playlistId) {
-    isLoading.value = true;
-    error.value = null;
-
-    try {
-      const apiStore = useApiStore();
-      const response = await apiStore.makeRequest(
-        `/api/media/playlists/${playlistId}`,
-        {
-          method: "DELETE",
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete playlist");
-      }
-
-      // Remove from local state
-      playlists.value = playlists.value.filter((p) => p.id !== playlistId);
-
-      if (currentPlaylist.value?.id === playlistId) {
-        currentPlaylist.value = null;
-      }
-    } catch (err) {
-      error.value = err.message;
-      console.error("Delete playlist error:", err);
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   async function addSongToPlaylist(playlistId, songId, position = null) {
     try {
       const apiStore = useApiStore();

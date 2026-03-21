@@ -545,6 +545,10 @@ export default {
       showDetailModal.value = false;
       selectedPlaylist.value = null;
       playlistSongs.value = [];
+      currentPlaylistDetail.value = null;
+      isEditMode.value = false;
+      editablePlaylistSongs.value = [];
+      editablePlaylist.value = { name: "", description: "" };
     }
 
     function closeAllModals() {
@@ -553,6 +557,12 @@ export default {
       showPlaylistModal.value = false;
       showPermissionsModal.value = false;
       showDetailModal.value = false;
+      currentPlaylistDetail.value = null;
+      selectedPlaylist.value = null;
+      playlistSongs.value = [];
+      isEditMode.value = false;
+      editablePlaylistSongs.value = [];
+      editablePlaylist.value = { name: "", description: "" };
     }
 
     // Player functions for the detail modal
@@ -850,8 +860,10 @@ export default {
           alertStore.info(t("playlist.noChanges"));
         }
 
-        // Exit edit mode
+        // Exit edit mode and clear editable copies
         isEditMode.value = false;
+        editablePlaylistSongs.value = [];
+        editablePlaylist.value = { name: "", description: "" };
 
         // Reload playlists to update the list and store only if metadata changed
         if (metadataChanged) {
