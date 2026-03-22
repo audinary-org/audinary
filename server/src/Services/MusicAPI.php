@@ -550,13 +550,18 @@ class MusicAPI implements MusicAPIInterface
 
             // Check if this is a transcoded stream request
             if ($result['transcode'] ?? false) {
+                // Check for seek start time (for seeking in transcoded streams)
+                $queryParams = $request->getQueryParams();
+                $startTime = isset($queryParams['start']) ? (float)$queryParams['start'] : null;
+
                 // Use progressive streaming transcoding
                 return $this->streamingService->streamTranscodedAudio(
                     $response,
                     $result['original_file_path'],
                     $result['transcode_format'] ?? 'aac',
                     $result['transcode_params'] ?? ['bitrate' => 192, 'mode' => 'cbr'],
-                    $result['duration'] ?? null
+                    $result['duration'] ?? null,
+                    $startTime
                 );
             }
 

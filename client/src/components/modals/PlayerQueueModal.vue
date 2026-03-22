@@ -495,7 +495,7 @@ export default {
           t("player.queue.confirmClearHistory") || "Clear playback history?",
         )
       ) {
-        playerStore.previousQueue.splice(0, playerStore.previousQueue.length);
+        playerStore.clearHistory();
       }
     };
 

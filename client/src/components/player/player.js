@@ -102,7 +102,7 @@ function bridgeLegacyPlayer(playerStore) {
 
   // Sync Howler.js instances
   if (window.currentHowl) {
-    playerStore.currentHowl = window.currentHowl;
+    playerStore.setCurrentHowl(window.currentHowl);
   }
 
   // Watch for changes in store and update legacy code

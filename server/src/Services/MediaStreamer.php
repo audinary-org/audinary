@@ -244,19 +244,26 @@ class MediaStreamer implements MediaStreamingServiceInterface
      * Stream transcoded audio progressively (FFmpeg pipe to browser)
      * @param array<string, mixed> $transcodingParams
      */
-    public function streamTranscodedAudio(Response $response, string $filePath, string $format, array $transcodingParams, ?float $duration = null): Response
+    public function streamTranscodedAudio(Response $response, string $filePath, string $format, array $transcodingParams, ?float $duration = null, ?float $startTime = null): Response
     {
         // FFmpeg command for streaming transcoding
         $codec = $this->getCodecForFormat($format);
         $outputFormat = $this->getFFmpegFormat($format);
 
-        // Build base command
-        $command = [
-            'ffmpeg',
+        // Build base command with optional seek
+        $command = ['ffmpeg'];
+
+        // Add seek before input for fast seeking
+        if ($startTime !== null && $startTime > 0) {
+            $command[] = '-ss';
+            $command[] = (string)$startTime;
+        }
+
+        $command = array_merge($command, [
             '-i', escapeshellarg($filePath),
             '-f', $outputFormat,
             '-c:a', $codec
-        ];
+        ]);
 
         // Add quality/bitrate parameters based on format and mode
         if ($format === 'flac') {

@@ -507,7 +507,7 @@
           <i :class="volumeIcon + ' text-lg'"></i>
         </button>
         <input
-          v-model="volume"
+          v-model.number="volume"
           type="range"
           class="flex-1 max-w-48 h-1 bg-gray-600 rounded-full appearance-none cursor-pointer"
           min="0"
@@ -843,7 +843,7 @@
               <i :class="volumeIcon + ' text-base'"></i>
             </button>
             <input
-              v-model="volume"
+              v-model.number="volume"
               type="range"
               class="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
               min="0"
@@ -1439,7 +1439,7 @@ function seekTo(event) {
 }
 
 function updateVolume() {
-  playerStore.setVolume(volume.value);
+  playerStore.setVolume(parseFloat(volume.value));
 }
 
 function updateVolumeFromFullscreen(newVolume) {
@@ -1507,8 +1507,8 @@ function setupVUMeter() {
   cleanupVUMeter();
 
   if (
-    !playerStore.currentHowl ||
-    !playerStore.audioContext ||
+    !playerStore.getCurrentHowl() ||
+    !playerStore.getAudioContext() ||
     playerStore.isLocalMode
   ) {
     vuSetupInProgress.value = false;
@@ -1517,7 +1517,7 @@ function setupVUMeter() {
 
   try {
     // Get the audio context from playerStore
-    const audioContext = playerStore.audioContext;
+    const audioContext = playerStore.getAudioContext();
 
     // Create analyser nodes for VU meter
     vuLeftAnalyser.value = audioContext.createAnalyser();
@@ -1552,13 +1552,14 @@ function setupVUMeter() {
     }
 
     // Approach 2: Try to connect directly to Howler's audio node
+    const howl = playerStore.getCurrentHowl();
     if (
       !connected &&
-      playerStore.currentHowl._sounds &&
-      playerStore.currentHowl._sounds[0]
+      howl._sounds &&
+      howl._sounds[0]
     ) {
       try {
-        const sound = playerStore.currentHowl._sounds[0];
+        const sound = howl._sounds[0];
         if (sound._node && sound._node._mediaElementSource) {
           sound._node._mediaElementSource.connect(vuSplitterNode.value);
           vuSplitterNode.value.connect(vuLeftAnalyser.value, 0);
@@ -1573,11 +1574,11 @@ function setupVUMeter() {
     // Approach 3: Create our own MediaElementSource
     if (
       !connected &&
-      playerStore.currentHowl._sounds &&
-      playerStore.currentHowl._sounds[0]
+      howl._sounds &&
+      howl._sounds[0]
     ) {
       try {
-        const sound = playerStore.currentHowl._sounds[0];
+        const sound = howl._sounds[0];
         if (sound._node) {
           const source = audioContext.createMediaElementSource(sound._node);
           source.connect(vuSplitterNode.value);
