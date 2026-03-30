@@ -1,5 +1,5 @@
 # Multi-stage build for Vue.js frontend + PHP backend
-FROM node:24-alpine AS frontend-builder
+FROM node:25-alpine AS frontend-builder
 
 # Build Vue.js frontend
 WORKDIR /app/client
