@@ -1,0 +1,36 @@
+version: 2
+
+updates:
+  # npm (root + client workspace)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      npm-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Composer (server)
+  - package-ecosystem: "composer"
+    directory: "/server"
+    schedule:
+      interval: "weekly"
+    groups:
+      composer-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Docker
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
