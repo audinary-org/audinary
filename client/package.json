@@ -41,7 +41,7 @@
     "prettier": "^3.6.2",
     "sass": "^1.89.1",
     "tailwindcss": "^4.1.12",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.2",
     "vite": "^7.1.9",
     "vue-eslint-parser": "^10.2.0",
     "vue-i18n-extract": "^2.0.7",
