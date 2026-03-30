@@ -3,6 +3,9 @@ name: Build and Publish Dev Docker Image
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'docker-compose.dev.yml'
 
 permissions:
   contents: read
