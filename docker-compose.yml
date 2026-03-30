@@ -30,7 +30,7 @@ services:
       - POSTGRES_USER=${DB_USER:-audinary}
       - POSTGRES_PASSWORD=${DB_PASSWORD:-audinary}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
