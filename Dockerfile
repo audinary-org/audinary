@@ -26,13 +26,13 @@ RUN apk add --no-cache \
     ffmpeg \
     mediainfo \
     postgresql-client \
-    php84-zip \
-    php84-pgsql \
-    php84-pdo_pgsql \
-    php84-simplexml \
-    php84-xmlwriter \
-    php84-xmlreader \
-    php84-fileinfo
+    php85-zip \
+    php85-pgsql \
+    php85-pdo_pgsql \
+    php85-simplexml \
+    php85-xmlwriter \
+    php85-xmlreader \
+    php85-fileinfo
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
