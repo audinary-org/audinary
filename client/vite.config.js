@@ -11,10 +11,17 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Vendor chunks for better caching
-          "vue-vendor": ["vue", "vue-router", "pinia"],
-          "audio-vendor": ["howler"],
+        manualChunks(id) {
+          if (
+            id.includes("node_modules/vue/") ||
+            id.includes("node_modules/vue-router/") ||
+            id.includes("node_modules/pinia/")
+          ) {
+            return "vue-vendor";
+          }
+          if (id.includes("node_modules/howler/")) {
+            return "audio-vendor";
+          }
         },
       },
     },
