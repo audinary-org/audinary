@@ -14,7 +14,7 @@ COPY client/ ./
 RUN npm run build
 
 # PHP + Nginx container
-FROM trafex/php-nginx:3.10.0
+FROM trafex/php-nginx:3.11.1
 
 # Switch to root for installation
 USER root
