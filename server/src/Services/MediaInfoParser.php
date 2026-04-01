@@ -143,13 +143,13 @@ class MediaInfoParser
             $results[$filePath] = [
                 // Track metadata (for songs table)
                 'title' => $parts[2] !== '' && $parts[2] !== '0' ? $parts[2] : pathinfo($filePath, PATHINFO_FILENAME),
-                'artist' => $parts[3] ?? '',
-                'genre' => $parts[6] ?? '',
+                'artist' => $parts[3],
+                'genre' => $parts[6],
                 'year' => $this->extractYearFromString($parts[11] ?? ''),
 
                 // Track numbers (for songs table)
-                'track_number' => (int)($parts[7] ?? 0),
-                'disc_number' => (int)($parts[9] ?? 0),
+                'track_number' => (int)$parts[7],
+                'disc_number' => (int)$parts[9],
 
                 // Audio properties (for songs table)
                 'duration' => (int)round((float)($parts[12] ?? 0) / 1000), // Convert ms to seconds
@@ -158,9 +158,9 @@ class MediaInfoParser
                 'filetype' => strtolower($parts[20] ?? ''),
 
                 // Album metadata (for album aggregation)
-                'album' => $parts[4] ?? '',
-                'album_artist' => $parts[5] ?? '',
-                'total_tracks' => (int)($parts[8] ?? 0),
+                'album' => $parts[4],
+                'album_artist' => $parts[5],
+                'total_tracks' => (int)$parts[8],
                 'total_discs' => (int)($parts[10] ?? 0),
                 'original_year' => 0, // Not directly available in template
 

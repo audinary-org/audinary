@@ -172,15 +172,16 @@ final class SmartPlaylistRepository
     private function buildSmartWhereClause(array $rules, array &$bindParams, ?string $userId): string
     {
         $conditions = $rules['conditions'] ?? [];
-        if (empty($conditions)) {
+        if (!is_array($conditions) || empty($conditions)) {
             return '';
         }
 
         $match = ($rules['match'] ?? 'all') === 'any' ? ' OR ' : ' AND ';
 
         $clauses = [];
-        foreach ($conditions as $i => $condition) {
-            $clause = $this->buildConditionClause($condition, $i, $bindParams, $userId);
+        $conditionList = array_values($conditions);
+        for ($i = 0; $i < count($conditionList); $i++) {
+            $clause = $this->buildConditionClause($conditionList[$i], $i, $bindParams, $userId);
             if ($clause !== null) {
                 $clauses[] = $clause;
             }
@@ -357,7 +358,7 @@ final class SmartPlaylistRepository
         $intValue = (int) $value;
         $param = ":{$paramName}";
         $bindParams[$param] = $intValue;
-        return "({$column} {$op} {$param})";
+        return '(' . $column . ' ' . $op . ' ' . $param . ')';
     }
 
     /**
@@ -374,7 +375,7 @@ final class SmartPlaylistRepository
         $bindParams[$paramMin] = (int) $value[0];
         $bindParams[$paramMax] = (int) $value[1];
 
-        return "({$column} >= {$paramMin} AND {$column} <= {$paramMax})";
+        return '(' . $column . ' >= ' . $paramMin . ' AND ' . $column . ' <= ' . $paramMax . ')';
     }
 
     private function buildSmartOrderClause(?string $sortBy, string $sortDirection): string

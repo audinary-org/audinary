@@ -39,7 +39,7 @@ class FavoriteRepository extends BaseRepository
         $sql .= " ORDER BY created_at DESC";
 
         $results = $this->executeQuery($sql, $bindParams);
-        return array_map(fn($row): \App\Models\Favorite => new Favorite($row), $results);
+        return array_map(fn($row): Favorite => new Favorite($row), $results);
     }
 
     /**
@@ -84,7 +84,7 @@ class FavoriteRepository extends BaseRepository
                 if (empty($data['playlist_id'])) {
                     throw new InvalidArgumentException("Playlist-ID fehlt");
                 }
-                $playlistId = $this->validateUuid($data['playlist_id'], 'playlist_id');
+                $playlistId = (string) $data['playlist_id'];
                 break;
         }
 
@@ -164,7 +164,7 @@ class FavoriteRepository extends BaseRepository
                 if (empty($data['playlist_id'])) {
                     throw new InvalidArgumentException("Playlist-ID fehlt");
                 }
-                $playlistId = $this->validateUuid($data['playlist_id'], 'playlist_id');
+                $playlistId = (string) $data['playlist_id'];
                 break;
         }
 
@@ -214,10 +214,12 @@ class FavoriteRepository extends BaseRepository
             throw new InvalidArgumentException("Ungültiger Favoriten-Typ: $type");
         }
 
-        $this->validateUuid($entityId, $type . '_id');
+        if ($type !== 'playlist') {
+            $this->validateUuid($entityId, $type . '_id');
+        }
 
         $sql = "
-            SELECT 1 
+            SELECT 1
             FROM favorites 
             WHERE user_id = :userId 
               AND favorite_type = :type

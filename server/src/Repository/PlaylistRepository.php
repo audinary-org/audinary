@@ -75,7 +75,7 @@ final class PlaylistRepository extends BaseRepository
         ]);
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(fn($data): \App\Models\Playlist => new Playlist($data), $results);
+        return array_map(fn($data): Playlist => new Playlist($data), $results);
     }
 
     /** @return array<int, Playlist> */
@@ -113,7 +113,7 @@ final class PlaylistRepository extends BaseRepository
         ]);
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(fn($data): \App\Models\Playlist => new Playlist($data), $results);
+        return array_map(fn($data): Playlist => new Playlist($data), $results);
     }
 
     public function countByUserId(string $userId): int
@@ -148,7 +148,7 @@ final class PlaylistRepository extends BaseRepository
         ]);
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(fn($data): \App\Models\Playlist => new Playlist($data), $results);
+        return array_map(fn($data): Playlist => new Playlist($data), $results);
     }
 
     /** @return array<int, Playlist> */
@@ -163,7 +163,7 @@ final class PlaylistRepository extends BaseRepository
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(fn($data): \App\Models\Playlist => new Playlist($data), $results);
+        return array_map(fn($data): Playlist => new Playlist($data), $results);
     }
 
     /** @param array<string, mixed> $data */
@@ -211,7 +211,7 @@ final class PlaylistRepository extends BaseRepository
         $id = (string) $row['id'];
 
         $playlist = $this->findById($id);
-        if (!$playlist instanceof \App\Models\Playlist) {
+        if (!$playlist instanceof Playlist) {
             error_log("Could not find playlist with ID: " . $id);
             throw new Exception("Failed to retrieve created playlist");
         }
@@ -223,7 +223,7 @@ final class PlaylistRepository extends BaseRepository
     public function update(string $id, array $data): ?Playlist
     {
         $existing = $this->findById($id);
-        if (!$existing instanceof \App\Models\Playlist) {
+        if (!$existing instanceof Playlist) {
             return null;
         }
 
@@ -359,6 +359,6 @@ final class PlaylistRepository extends BaseRepository
         ]);
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(fn($data): \App\Models\Playlist => new Playlist($data), $results);
+        return array_map(fn($data): Playlist => new Playlist($data), $results);
     }
 }
