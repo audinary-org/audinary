@@ -426,13 +426,7 @@
         </div>
       </div>
 
-      <!-- Album Detail Modal -->
-      <AlbumDetailModal
-        :album="selectedAlbum"
-        ref="albumDetailModal"
-        @close="closeAlbumDetail"
-        @album-updated="handleAlbumUpdated"
-      />
+      <!-- Album Detail Modal removed - now handled by AlbumDetailView in MainView -->
 
       <!-- Add to Playlist Modal -->
       <PlaylistAddToModal
@@ -463,7 +457,7 @@ import { usePlayerStore } from "@/stores/player";
 import { useAlertStore } from "@/stores/alert";
 import { useApiStore } from "@/stores/api";
 import SimpleImage from "@/components/common/SimpleImage.vue";
-import AlbumDetailModal from "@/components/modals/AlbumDetailModal.vue";
+import { useDetailView } from "@/composables/useDetailView";
 import PlaylistAddToModal from "@/components/modals/PlaylistAddToModal.vue";
 import { getCdCaseImage } from "@/utils/cdCases.js";
 
@@ -481,8 +475,7 @@ const apiStore = useApiStore();
 // State
 const searchInput = ref("");
 const searchTimeout = ref(null);
-const selectedAlbum = ref(null);
-const albumDetailModal = ref(null);
+const { openAlbumDetail: navigateToAlbum } = useDetailView();
 const showPlaylistModal = ref(false);
 const selectedTracksForPlaylist = ref([]);
 const selectedAlbumForPlaylist = ref(null);
@@ -595,24 +588,7 @@ function showArtist(artist) {
 }
 
 function openAlbumDetail(album) {
-  selectedAlbum.value = album;
-  if (albumDetailModal.value) {
-    albumDetailModal.value.show();
-  }
-}
-
-function closeAlbumDetail() {
-  selectedAlbum.value = null;
-}
-
-function handleAlbumUpdated(updatedAlbum) {
-  // Update album in search results if needed
-  const albumIndex = results.value.albums?.findIndex(
-    (a) => a.album_id === updatedAlbum.album_id,
-  );
-  if (albumIndex !== -1) {
-    results.value.albums[albumIndex] = updatedAlbum;
-  }
+  navigateToAlbum(album);
 }
 
 function showPlaylistAddToModal(song) {

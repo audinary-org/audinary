@@ -368,35 +368,7 @@
     @close="closePlaylistModal"
   />
 
-  <!-- Playlist Detail Modal -->
-  <PlaylistDetailModal
-    :is-visible="showDetailModal"
-    :current-playlist-detail="currentPlaylistDetail"
-    :playlist-songs="playlistSongs"
-    :is-loading="isLoading"
-    :is-edit-mode="isEditMode"
-    :editable-playlist="editablePlaylist"
-    :editable-playlist-songs="editablePlaylistSongs"
-    :can-edit-playlist="canEditPlaylist"
-    :format-duration="formatDuration"
-    :format-total-duration="formatTotalDuration"
-    @close="closeDetailModal"
-    @toggle-inline-edit-mode="toggleInlineEditMode"
-    @save-changes="saveAllChanges"
-    @cancel-edit="cancelEdit"
-    @play-playlist="playPlaylistFromDetail"
-    @add-playlist-to-queue="addPlaylistToQueueFromDetail"
-    @play-song="playSong"
-    @add-song-to-queue="addSongToQueue"
-    @remove-song="removeSongFromPlaylist"
-    @show-add-to-playlist-modal="showPlaylistAddToModal"
-    @toggle-song-favorite="toggleSongFavorite"
-    @change-playlist-cover="changePlaylistCover"
-    @update-editable-playlist-songs="updateEditablePlaylistSongs"
-    @remove-from-editable-list="removeFromEditableList"
-    @confirm-delete-current-playlist="confirmDeleteCurrentPlaylist"
-    @on-drag-end="onDragEnd"
-  />
+  <!-- Playlist Detail Modal removed - now handled by PlaylistDetailView in MainView -->
 
   <!-- Playlist Permissions Modal -->
   <PlaylistPermissionsModal
@@ -417,7 +389,7 @@
 </template>
 
 <script>
-import { ref, shallowRef, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { usePlaylistStore } from "@/stores/playlist";
 import { usePlayerStore } from "@/stores/player";
@@ -431,7 +403,7 @@ import PlaylistAddToModal from "@/components/modals/PlaylistAddToModal.vue";
 import PlaylistPermissionsModal from "@/components/modals/PlaylistPermissionsModal.vue";
 import PublicSharesCreateModal from "@/components/modals/PublicSharesCreateModal.vue";
 import PlaylistDeleteModal from "@/components/modals/PlaylistDeleteModal.vue";
-import PlaylistDetailModal from "@/components/modals/PlaylistDetailModal.vue";
+import { useDetailView } from "@/composables/useDetailView";
 import SimpleImage from "@/components/common/SimpleImage.vue";
 
 export default {
@@ -443,7 +415,6 @@ export default {
     PlaylistPermissionsModal,
     PublicSharesCreateModal,
     PlaylistDeleteModal,
-    PlaylistDetailModal,
     SimpleImage,
   },
   setup() {
@@ -455,6 +426,7 @@ export default {
     const authStore = useAuthStore();
     const route = useRoute();
     const router = useRouter();
+    const { openPlaylistDetail: navigateToPlaylist } = useDetailView();
 
     // Local state
     const isLoading = ref(false);
@@ -464,20 +436,9 @@ export default {
 
     // Modal states
     const showGlobalCreateModal = ref(false);
-    const currentPlaylistDetail = ref(null);
 
-    // Local playlist detail modal state
-    const showDetailModal = ref(false);
+    // Local state
     const selectedPlaylist = ref(null);
-    const playlistSongs = shallowRef([]);
-
-    // Edit mode state
-    const isEditMode = ref(false);
-    const editablePlaylist = ref({
-      name: "",
-      description: "",
-    });
-    const editablePlaylistSongs = shallowRef([]);
 
     // View and filter state
     const viewMode = ref("grid");
@@ -511,109 +472,18 @@ export default {
       }
     }
 
-    // Track active fetch to cancel stale requests
-    let activePlaylistFetchId = 0;
-
-    async function openPlaylistDetail(playlistId) {
-      // Cancel any pending close animation and clear old data immediately
-      clearPlaylistModalData();
-
-      const fetchId = ++activePlaylistFetchId;
-
-      try {
-        isLoading.value = true;
-        // Show modal immediately with loading state
-        showDetailModal.value = true;
-
-        const response = await fetch(`/api/media/playlists/${playlistId}`, {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        // Abort if a newer playlist was opened while we were fetching
-        if (fetchId !== activePlaylistFetchId) return;
-
-        if (!response.ok) {
-          alertStore.error(t("playlist.loadError"));
-          showDetailModal.value = false;
-          return;
-        }
-
-        const data = await response.json();
-
-        // Abort if a newer playlist was opened while we were parsing
-        if (fetchId !== activePlaylistFetchId) return;
-
-        currentPlaylistDetail.value = data.playlist;
-        playlistSongs.value = data.songs || [];
-      } catch (error) {
-        if (fetchId !== activePlaylistFetchId) return;
-        console.error("Error opening playlist:", error);
-        alertStore.error(t("playlist.loadError"));
-        showDetailModal.value = false;
-      } finally {
-        if (fetchId === activePlaylistFetchId) {
-          isLoading.value = false;
-        }
-      }
-    }
-
-    function clearPlaylistModalData() {
-      playlistSongs.value = [];
-      currentPlaylistDetail.value = null;
-      selectedPlaylist.value = null;
-      isEditMode.value = false;
-      editablePlaylistSongs.value = [];
-      editablePlaylist.value = { name: "", description: "" };
-    }
-
-    function closeDetailModal() {
-      showDetailModal.value = false;
-      clearPlaylistModalData();
+    function openPlaylistDetail(playlistId) {
+      navigateToPlaylist(playlistId);
     }
 
     function closeAllModals() {
       showGlobalCreateModal.value = false;
       showDeleteModal.value = false;
-      showPlaylistModal.value = false;
       showPermissionsModal.value = false;
-      showDetailModal.value = false;
-      clearPlaylistModalData();
-    }
-
-    // Player functions for the detail modal
-    async function playPlaylistFromDetail() {
-      try {
-        if (playlistSongs.value.length > 0) {
-          playerStore.playPlaylist(playlistSongs.value);
-        }
-      } catch (err) {
-        console.error("Error playing playlist:", err);
-      }
-    }
-
-    async function addPlaylistToQueueFromDetail() {
-      try {
-        if (playlistSongs.value.length > 0) {
-          playerStore.addMultipleToQueue(playlistSongs.value);
-        }
-      } catch (err) {
-        console.error("Error adding playlist to queue:", err);
-      }
     }
 
     function confirmDeletePlaylist(playlist) {
       playlistToDelete.value = playlist;
-      showDeleteModal.value = true;
-    }
-
-    function confirmDeleteCurrentPlaylist() {
-      if (!currentPlaylistDetail.value) return;
-
-      // Set the current playlist as the one to delete and show the modal
-      playlistToDelete.value = currentPlaylistDetail.value;
       showDeleteModal.value = true;
     }
 
@@ -644,7 +514,6 @@ export default {
         }
 
         // Close all modals and reset state
-        closeDetailModal();
         closeAllModals();
         showDeleteModal.value = false;
         playlistToDelete.value = null;
@@ -667,23 +536,6 @@ export default {
 
     async function playPlaylist(playlistId) {
       try {
-        // If we have the playlist details loaded, use the songs directly
-        if (
-          currentPlaylistDetail.value &&
-          (currentPlaylistDetail.value.id === playlistId ||
-            currentPlaylistDetail.value.playlist_id === playlistId) &&
-          playlistSongs.value.length > 0
-        ) {
-          playerStore.playPlaylist(playlistSongs.value);
-          alertStore.success(
-            t("playlist.playing", {
-              name: currentPlaylistDetail.value?.name || "Playlist",
-            }),
-          );
-          return;
-        }
-
-        // Otherwise, load the playlist songs first
         const response = await fetch(`/api/media/playlists/${playlistId}`, {
           headers: {
             Authorization: `Bearer ${authStore.token}`,
@@ -712,44 +564,8 @@ export default {
       }
     }
 
-    async function playSong(song) {
-      try {
-        playerStore.playSong(song);
-      } catch (err) {
-        console.error("Error playing song:", err);
-        alertStore.error(t("songs.playError"));
-      }
-    }
-
-    async function addSongToQueue(song) {
-      try {
-        playerStore.addToQueue(song);
-        alertStore.success(t("songs.addedToQueue", { title: song.title }));
-      } catch (err) {
-        console.error("Error adding song to queue:", err);
-        alertStore.error(t("songs.addToQueueError"));
-      }
-    }
-
     async function addPlaylistToQueue(playlistId) {
       try {
-        // If we have the playlist details loaded, use the songs directly
-        if (
-          currentPlaylistDetail.value &&
-          (currentPlaylistDetail.value.id === playlistId ||
-            currentPlaylistDetail.value.playlist_id === playlistId) &&
-          playlistSongs.value.length > 0
-        ) {
-          playerStore.addMultipleToQueue(playlistSongs.value);
-          alertStore.success(
-            t("playlist.addedToQueue", {
-              name: currentPlaylistDetail.value?.name || "Playlist",
-            }),
-          );
-          return;
-        }
-
-        // Otherwise, load the playlist songs first
         const response = await fetch(`/api/media/playlists/${playlistId}`, {
           headers: {
             Authorization: `Bearer ${authStore.token}`,
@@ -778,302 +594,6 @@ export default {
       }
     }
 
-    async function removeSongFromPlaylist(songId) {
-      try {
-        const playlistId =
-          currentPlaylistDetail.value.id ||
-          currentPlaylistDetail.value.playlist_id;
-        const response = await fetch(
-          `/api/media/playlists/${playlistId}/songs/${songId}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${authStore.token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        if (!response.ok) {
-          alertStore.error(t("playlist.removeSongError"));
-          return;
-        }
-
-        // Remove from local list
-        playlistSongs.value = playlistSongs.value.filter(
-          (song) => (song.id || song.song_id) !== songId,
-        );
-        alertStore.success(t("playlist.songRemoved"));
-      } catch (err) {
-        console.error("Error removing song from playlist:", err);
-        alertStore.error(t("playlist.removeSongError"));
-      }
-    }
-
-    function toggleInlineEditMode() {
-      if (isEditMode.value) {
-        // Exiting edit mode - save all changes
-        saveAllChanges();
-      } else {
-        // Entering edit mode - initialize editable data
-        isEditMode.value = true;
-        editablePlaylist.value = {
-          name: currentPlaylistDetail.value.name,
-          description: currentPlaylistDetail.value.description || "",
-        };
-        editablePlaylistSongs.value = playlistSongs.value.map((song) => ({
-          ...song,
-        }));
-      }
-    }
-
-    async function saveAllChanges() {
-      try {
-        isLoading.value = true;
-        const playlistId =
-          currentPlaylistDetail.value.id ||
-          currentPlaylistDetail.value.playlist_id;
-
-        // Check if playlist metadata has changed
-        const metadataChanged =
-          editablePlaylist.value.name !== currentPlaylistDetail.value.name ||
-          editablePlaylist.value.description !==
-            (currentPlaylistDetail.value.description || "");
-
-        // Check if song order has changed
-        const originalSongIds = playlistSongs.value.map(
-          (song) => song.id || song.song_id,
-        );
-        const newSongIds = editablePlaylistSongs.value.map(
-          (song) => song.id || song.song_id,
-        );
-        const orderChanged =
-          originalSongIds.length !== newSongIds.length ||
-          originalSongIds.some((id, index) => id !== newSongIds[index]);
-
-        // Save playlist metadata only if it has changed
-        if (metadataChanged) {
-          await savePlaylistMetadata(playlistId);
-        }
-
-        // Save song order only if it has changed and songs exist
-        if (orderChanged && editablePlaylistSongs.value.length > 0) {
-          await savePlaylistOrder();
-        }
-
-        // Show appropriate success message
-        if (metadataChanged && orderChanged) {
-          alertStore.success(t("playlist.updateSuccess"));
-        } else if (metadataChanged) {
-          alertStore.success(t("playlist.metadataUpdateSuccess"));
-        } else if (orderChanged) {
-          alertStore.success(t("playlist.orderUpdateSuccess"));
-        } else {
-          alertStore.info(t("playlist.noChanges"));
-        }
-
-        // Exit edit mode and clear editable copies
-        isEditMode.value = false;
-        editablePlaylistSongs.value = [];
-        editablePlaylist.value = { name: "", description: "" };
-
-        // Reload playlists to update the list and store only if metadata changed
-        if (metadataChanged) {
-          await loadPlaylists();
-          await playlistStore.loadPlaylists();
-        }
-      } catch (err) {
-        console.error("Error saving playlist changes:", err);
-        alertStore.error(err.message);
-      } finally {
-        isLoading.value = false;
-      }
-    }
-
-    async function savePlaylistMetadata(playlistId) {
-      const response = await fetch(`/api/media/playlists/${playlistId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: editablePlaylist.value.name,
-          description: editablePlaylist.value.description,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save playlist metadata");
-      }
-
-      // Update current playlist detail with new data
-      currentPlaylistDetail.value.name = editablePlaylist.value.name;
-      currentPlaylistDetail.value.description =
-        editablePlaylist.value.description;
-
-      // Update modal title and any other references
-      // The reactive currentPlaylistDetail will automatically update the UI
-    }
-
-    async function savePlaylistOrder() {
-      const playlistId =
-        currentPlaylistDetail.value.id ||
-        currentPlaylistDetail.value.playlist_id;
-
-      // Create song_positions object with songId => position mapping
-      const songPositions = {};
-      editablePlaylistSongs.value.forEach((song, index) => {
-        const songId = song.id || song.song_id;
-        songPositions[songId] = index + 1; // 1-based position
-      });
-
-      await playlistStore.reorderPlaylistSongs(playlistId, songPositions);
-
-      // Update the main playlist songs with the new order
-      playlistSongs.value = editablePlaylistSongs.value.map((song) => ({
-        ...song,
-      }));
-    }
-
-    async function removeFromEditableList(index) {
-      const songToRemove = editablePlaylistSongs.value[index];
-      const playlistId =
-        currentPlaylistDetail.value.id ||
-        currentPlaylistDetail.value.playlist_id;
-      const songId = songToRemove.id || songToRemove.song_id;
-
-      try {
-        // Remove from server immediately
-        await playlistStore.removeSongFromPlaylist(playlistId, songId);
-
-        // Remove from editable list (replace array for shallowRef reactivity)
-        editablePlaylistSongs.value = editablePlaylistSongs.value.filter(
-          (_, i) => i !== index,
-        );
-
-        // Also remove from main playlist songs array to keep them in sync
-        playlistSongs.value = playlistSongs.value.filter(
-          (s) => (s.id || s.song_id) !== songId,
-        );
-
-        alertStore.success(t("playlist.songRemoved"));
-      } catch (error) {
-        console.error("Error removing song from playlist:", error);
-        alertStore.error(error.message || t("playlist.removeSongError"));
-      }
-    }
-
-    function updateEditablePlaylistSongs(newSongs) {
-      editablePlaylistSongs.value = newSongs;
-    }
-
-    function onDragEnd(event) {
-      // The editablePlaylistSongs is already updated by v-model
-      // Changes will be saved when exiting edit mode
-    }
-
-    function canEditPlaylist(playlist) {
-      if (!playlist) return false;
-
-      // Smart playlists are not editable by users (admin-only)
-      if (playlist.type === 'smart') return false;
-
-      // Get current user from auth store
-      const currentUser = authStore.user;
-      if (!currentUser) return false;
-
-      // Only the playlist owner can edit
-      return (
-        playlist.user_id === currentUser.user_id ||
-        playlist.user_id === currentUser.id
-      );
-    }
-
-    function changePlaylistCover() {
-      // Create a file input element
-      const fileInput = document.createElement("input");
-      fileInput.type = "file";
-      fileInput.accept = "image/jpeg,image/jpg,image/png";
-      fileInput.style.display = "none";
-
-      fileInput.addEventListener("change", async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        // Validate file type
-        const validTypes = ["image/jpeg", "image/jpg", "image/png"];
-        if (!validTypes.includes(file.type)) {
-          alertStore.error("Please select a JPG or PNG image file.");
-          return;
-        }
-
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          alertStore.error("Image file size must be less than 5MB.");
-          return;
-        }
-
-        try {
-          // Create FormData for file upload
-          const formData = new FormData();
-          formData.append("playlistCover", file);
-
-          const response = await fetch(
-            `/api/media/playlists/${currentPlaylistDetail.value.playlist_id}/cover`,
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${authStore.token}`,
-              },
-              body: formData,
-            },
-          );
-
-          const result = await response.json();
-
-          if (response.ok && result.success) {
-            // Update the playlist's cover_image_uuid
-            currentPlaylistDetail.value.cover_image_uuid =
-              result.cover_image_uuid;
-
-            // Update in playlists array
-            const playlistIndex = playlists.value.findIndex(
-              (p) => p.playlist_id === currentPlaylistDetail.value.playlist_id,
-            );
-            if (playlistIndex !== -1) {
-              playlists.value[playlistIndex].cover_image_uuid =
-                result.cover_image_uuid;
-            }
-
-            alertStore.success("Playlist cover updated successfully!");
-          } else {
-            alertStore.error(result.error || "Failed to upload playlist cover");
-          }
-        } catch (error) {
-          console.error("Cover upload error:", error);
-          alertStore.error(
-            "Failed to upload playlist cover. Please try again.",
-          );
-        }
-      });
-
-      // Trigger file selection
-      document.body.appendChild(fileInput);
-      fileInput.click();
-      document.body.removeChild(fileInput);
-    }
-
-    function cancelEdit() {
-      // Reset to original values
-      isEditMode.value = false;
-      editablePlaylist.value = {
-        name: "",
-        description: "",
-      };
-      editablePlaylistSongs.value = [];
-    }
-
     // Add missing methods for consistent button functionality
     const showPlaylistModal = ref(false);
     const selectedSong = ref(null);
@@ -1094,29 +614,6 @@ export default {
     function closePlaylistModal() {
       showPlaylistModal.value = false;
       selectedSong.value = null;
-    }
-
-    async function toggleSongFavorite(song) {
-      try {
-        const response = await apiStore.toggleFavorite({
-          type: "song",
-          itemId: song.id || song.song_id,
-          currentlyFav: song.is_favorite,
-        });
-
-        if (response) {
-          // Replace array to trigger shallowRef reactivity
-          const songId = song.id || song.song_id;
-          playlistSongs.value = playlistSongs.value.map((s) =>
-            (s.id || s.song_id) === songId
-              ? { ...s, is_favorite: !s.is_favorite }
-              : s,
-          );
-        }
-      } catch (error) {
-        console.error("Error toggling song favorite:", error);
-        alertStore.error("Failed to update favorite status");
-      }
     }
 
     function formatDate(dateString) {
@@ -1142,11 +639,6 @@ export default {
       return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
     }
 
-    async function loadAndOpenPlaylistDetail(playlistId) {
-      // Delegate to openPlaylistDetail which handles race conditions
-      await openPlaylistDetail(playlistId);
-    }
-
     // Watch for URL parameters to open playlist from navigation
     watch(
       () => route.query,
@@ -1154,13 +646,7 @@ export default {
         // Check if specific playlist should be opened from navigation
         if (newQuery.openPlaylist && playlists.value.length > 0) {
           const playlistId = newQuery.openPlaylist;
-          openPlaylistDetail(playlistId);
-
-          // Remove the openPlaylist parameter from URL after opening
-          router.replace({
-            path: "/",
-            query: { tab: "playlists" },
-          });
+          navigateToPlaylist(playlistId);
         }
       },
       { immediate: true },
@@ -1270,7 +756,6 @@ export default {
       // Global modal state
       showGlobalCreateModal,
       closeAllModals,
-      currentPlaylistDetail,
 
       // Computed
       playlists,
@@ -1285,31 +770,23 @@ export default {
       // Methods
       loadPlaylists,
       openPlaylistDetail,
-      closeDetailModal,
       confirmDeletePlaylist,
-      confirmDeleteCurrentPlaylist,
       deletePlaylist,
-      removeSongFromPlaylist,
       formatDate,
       formatDuration,
       formatTotalDuration,
       onPlaylistCreated,
 
-      // Player functions for detail modal
+      // Player functions
       playPlaylist,
       addPlaylistToQueue,
-      playSong,
-      addSongToQueue,
-      playPlaylistFromDetail,
-      addPlaylistToQueueFromDetail,
 
       // Playlist favorites functionality
       togglePlaylistFavorite,
 
-      // New methods for consistent button functionality
+      // Playlist modal (add-to)
       showPlaylistAddToModal,
       closePlaylistModal,
-      toggleSongFavorite,
       showPlaylistModal,
       selectedSong,
 
@@ -1327,24 +804,8 @@ export default {
       closeShareModal,
       onShareCreated,
 
-      // Edit mode functionality
-      isEditMode,
-      editablePlaylist,
-      editablePlaylistSongs,
-      toggleInlineEditMode,
-      saveAllChanges,
-      cancelEdit,
-      removeFromEditableList,
-      updateEditablePlaylistSongs,
-      onDragEnd,
-      canEditPlaylist,
-      changePlaylistCover,
-      loadAndOpenPlaylistDetail,
-
-      // Modal state
-      showDetailModal,
+      // Playlist state
       selectedPlaylist,
-      playlistSongs,
 
       // i18n
       t,

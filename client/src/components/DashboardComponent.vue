@@ -42,14 +42,6 @@
 
       <!-- Recent Played Songs -->
       <RecentPlayedSongsSection ref="recentPlayedSongsSection" />
-
-      <!-- Album Detail Modal -->
-      <AlbumDetailModal
-        :album="selectedAlbum"
-        ref="albumDetailModal"
-        @close="closeAlbumDetail"
-        @album-updated="handleAlbumUpdated"
-      />
     </div>
   </div>
 </template>
@@ -62,7 +54,7 @@ import NewAlbumsSection from "./dashboard/NewAlbumsSection.vue";
 import RecentPlayedAlbumsSection from "./dashboard/RecentPlayedAlbumsSection.vue";
 import NewArtistsSection from "./dashboard/NewArtistsSection.vue";
 import RecentPlayedSongsSection from "./dashboard/RecentPlayedSongsSection.vue";
-import AlbumDetailModal from "@/components/modals/AlbumDetailModal.vue";
+import { useDetailView } from "@/composables/useDetailView";
 
 export default {
   name: "DashboardComponent",
@@ -72,12 +64,10 @@ export default {
     RecentPlayedAlbumsSection,
     NewArtistsSection,
     RecentPlayedSongsSection,
-    AlbumDetailModal,
   },
   setup() {
     const router = useRouter();
-    const selectedAlbum = ref(null);
-    const albumDetailModal = ref(null);
+    const { openAlbumDetail } = useDetailView();
     const isRefreshing = ref(false);
 
     // Refs to section components
@@ -87,18 +77,7 @@ export default {
     const recentPlayedSongsSection = ref(null);
 
     const handleShowAlbumDetail = (album) => {
-      selectedAlbum.value = album;
-      if (albumDetailModal.value) {
-        albumDetailModal.value.show();
-      }
-    };
-
-    const closeAlbumDetail = () => {
-      selectedAlbum.value = null;
-    };
-
-    const handleAlbumUpdated = () => {
-      // Handle album updates if needed
+      openAlbumDetail(album);
     };
 
     const handleShowArtistAlbums = (artistName) => {
@@ -149,16 +128,12 @@ export default {
     };
 
     return {
-      selectedAlbum,
-      albumDetailModal,
       isRefreshing,
       newAlbumsSection,
       newArtistsSection,
       recentPlayedAlbumsSection,
       recentPlayedSongsSection,
       handleShowAlbumDetail,
-      closeAlbumDetail,
-      handleAlbumUpdated,
       handleShowArtistAlbums,
       refreshDashboard,
     };

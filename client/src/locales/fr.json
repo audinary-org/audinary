@@ -36,7 +36,8 @@
     "verifying": "Vérification...",
     "scroll_for_more": "Faire défiler pour plus",
     "no_songs": "Aucune chanson trouvée",
-    "clear_filters": "Réinitialiser les filtres"
+    "clear_filters": "Réinitialiser les filtres",
+    "back": "Retour"
   },
   "nav": {
     "dashboard": "Tableau de bord",

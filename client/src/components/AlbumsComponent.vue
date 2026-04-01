@@ -450,13 +450,7 @@
         </div>
       </div>
 
-      <!-- Album Detail Modal -->
-      <AlbumDetailModal
-        :album="selectedAlbum"
-        ref="albumDetailModal"
-        @close="closeAlbumDetail"
-        @album-updated="handleAlbumUpdated"
-      />
+      <!-- Album Detail Modal removed - now handled by AlbumDetailView in MainView -->
 
       <!-- Add to Playlist Modal -->
       <PlaylistAddToModal
@@ -489,7 +483,7 @@ import { useAlertStore } from "@/stores/alert";
 import { useAuthStore } from "@/stores/auth";
 import ContentHeader from "@/components/common/ContentHeader.vue";
 import SimpleImage from "@/components/common/SimpleImage.vue";
-import AlbumDetailModal from "@/components/modals/AlbumDetailModal.vue";
+import { useDetailView } from "@/composables/useDetailView";
 import PlaylistAddToModal from "@/components/modals/PlaylistAddToModal.vue";
 import PublicSharesCreateModal from "@/components/modals/PublicSharesCreateModal.vue";
 import { getCdCaseImage } from "@/utils/cdCases.js";
@@ -499,7 +493,6 @@ export default {
   components: {
     ContentHeader,
     SimpleImage,
-    AlbumDetailModal,
     PlaylistAddToModal,
     PublicSharesCreateModal,
   },
@@ -530,8 +523,7 @@ export default {
     const hasMore = ref(true);
     const currentPage = ref(0);
     const pageSize = 50;
-    const selectedAlbum = ref(null);
-    const albumDetailModal = ref(null);
+    const { openAlbumDetail } = useDetailView();
     const activeFilters = ref({
       sort: "artistAndAlbum",
       sortDirection: "asc",
@@ -677,24 +669,7 @@ export default {
     };
 
     const showAlbumDetail = (album) => {
-      selectedAlbum.value = album;
-      if (albumDetailModal.value) {
-        albumDetailModal.value.show();
-      }
-    };
-
-    const closeAlbumDetail = () => {
-      selectedAlbum.value = null;
-    };
-
-    const handleAlbumUpdated = (updatedAlbum) => {
-      // Update the album in the list
-      const index = albums.value.findIndex(
-        (a) => a.album_id === updatedAlbum.album_id,
-      );
-      if (index !== -1) {
-        albums.value[index] = updatedAlbum;
-      }
+      openAlbumDetail(album);
     };
 
     const toggleAlbumFavorite = async (album) => {
@@ -890,7 +865,7 @@ export default {
           try {
             const albumResponse = await apiStore.loadAlbumSongs(album.album_id);
 
-            // Handle the response format - use the same pattern as AlbumDetailModal
+            // Handle the response format
             const songs =
               albumResponse.tracks || albumResponse.data || albumResponse || [];
 
@@ -995,8 +970,6 @@ export default {
       currentFilter,
       viewMode,
       hasMore,
-      selectedAlbum,
-      albumDetailModal,
       loadMoreTrigger,
       loadAlbums,
       loadMore,
@@ -1008,8 +981,6 @@ export default {
       showAlbumDetail,
       addToQueue,
       showAddAlbumToPlaylistModal,
-      closeAlbumDetail,
-      handleAlbumUpdated,
       toggleAlbumFavorite,
       goBack,
       t,

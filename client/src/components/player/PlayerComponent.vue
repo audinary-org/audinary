@@ -1239,13 +1239,7 @@
   <!-- Queue Modal -->
   <PlayerQueueModal v-if="showQueue" @close="showQueue = false" />
 
-  <!-- Album Detail Modal -->
-  <AlbumDetailModal
-    :album="selectedAlbum"
-    ref="albumDetailModal"
-    @close="closeAlbumDetail"
-    @album-updated="handleAlbumUpdated"
-  />
+  <!-- Album Detail Modal removed - now handled by AlbumDetailView in MainView -->
 </template>
 
 <script setup>
@@ -1255,7 +1249,7 @@ import { usePlayerStore } from "@/stores/player";
 import { useThemeStore } from "@/stores/theme";
 import { useSidebar } from "@/composables/useSidebar";
 import PlayerQueueModal from "@/components/modals/PlayerQueueModal.vue";
-import AlbumDetailModal from "@/components/modals/AlbumDetailModal.vue";
+import { useDetailView } from "@/composables/useDetailView";
 import SimpleImage from "@/components/common/SimpleImage.vue";
 import FullscreenPlayer from "./FullscreenPlayer.vue";
 
@@ -1275,8 +1269,7 @@ const themeColors = computed(() => themeStore.getThemeColors);
 const showQueue = ref(false);
 const showEqualizer = ref(false);
 const showFullscreenPlayer = ref(false);
-const selectedAlbum = ref(null);
-const albumDetailModal = ref(null);
+const { openAlbumDetail: navigateToAlbum } = useDetailView();
 const volume = ref(0.5);
 const equalizer = ref({
   60: 0,
@@ -1761,32 +1754,7 @@ function showAlbumDetail(song) {
     return;
   }
 
-  // Create minimal album object - keep it simple to avoid performance issues
-  selectedAlbum.value = {
-    album_id: song.album_id,
-    albumName: song.album,
-    album_name: song.album,
-    artistName: song.artist,
-    album_artist: song.artist,
-    albumYear: song.album_year || song.year || "",
-    album_year: song.album_year || song.year || "",
-    genre: song.album_genre || song.genre || "",
-    albumGenre: song.album_genre || song.genre || "",
-    albumDuration: song.album_duration || 0,
-    album_duration: song.album_duration || 0,
-  };
-
-  if (albumDetailModal.value) {
-    albumDetailModal.value.show();
-  }
-}
-
-function closeAlbumDetail() {
-  selectedAlbum.value = null;
-}
-
-function handleAlbumUpdated(updatedAlbum) {
-  // Optional: Handle album updates if needed
+  navigateToAlbum(song.album_id);
 }
 
 // Mobile player methods
