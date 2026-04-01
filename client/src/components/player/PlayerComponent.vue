@@ -1546,11 +1546,7 @@ function setupVUMeter() {
 
     // Approach 2: Try to connect directly to Howler's audio node
     const howl = playerStore.getCurrentHowl();
-    if (
-      !connected &&
-      howl._sounds &&
-      howl._sounds[0]
-    ) {
+    if (!connected && howl._sounds && howl._sounds[0]) {
       try {
         const sound = howl._sounds[0];
         if (sound._node && sound._node._mediaElementSource) {
@@ -1565,11 +1561,7 @@ function setupVUMeter() {
     }
 
     // Approach 3: Create our own MediaElementSource
-    if (
-      !connected &&
-      howl._sounds &&
-      howl._sounds[0]
-    ) {
+    if (!connected && howl._sounds && howl._sounds[0]) {
       try {
         const sound = howl._sounds[0];
         if (sound._node) {

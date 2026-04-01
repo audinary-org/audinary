@@ -30,12 +30,18 @@
             <!-- Playlist Metadata -->
             <div class="flex-1">
               <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">
-                <span v-if="currentPlaylist?.type === 'smart'" class="inline-flex items-center gap-1.5 mr-2 px-2.5 py-1 bg-purple-600/60 rounded-lg text-sm font-medium align-middle">
+                <span
+                  v-if="currentPlaylist?.type === 'smart'"
+                  class="inline-flex items-center gap-1.5 mr-2 px-2.5 py-1 bg-purple-600/60 rounded-lg text-sm font-medium align-middle"
+                >
                   <i class="bi bi-lightning-fill text-yellow-300"></i> Smart
                 </span>
                 {{ currentPlaylist?.name || "Playlist" }}
               </h1>
-              <p v-if="currentPlaylist?.description" class="text-sm text-white/60 mb-2">
+              <p
+                v-if="currentPlaylist?.description"
+                class="text-sm text-white/60 mb-2"
+              >
                 {{ currentPlaylist.description }}
               </p>
               <p class="text-lg text-white/80 mb-2">
@@ -121,7 +127,11 @@
     </div>
 
     <!-- Songs List -->
-    <div class="flex-1 overflow-y-auto px-2 py-4" ref="songsScrollContainer" @scroll="onSongsScroll">
+    <div
+      class="flex-1 overflow-y-auto px-2 py-4"
+      ref="songsScrollContainer"
+      @scroll="onSongsScroll"
+    >
       <!-- Edit Form (if in edit mode) -->
       <div
         v-if="isEditMode && currentPlaylist"
@@ -197,10 +207,7 @@
               <div
                 class="w-8 text-center text-white/70 mr-4 text-sm font-mono font-bold"
               >
-                <SoundWaveAnimation
-                  :song="song"
-                  :track-number="index + 1"
-                />
+                <SoundWaveAnimation :song="song" :track-number="index + 1" />
               </div>
               <div class="relative w-10 h-10 mr-4">
                 <div
@@ -258,10 +265,7 @@
             <div
               class="w-8 text-center text-sm text-white/70 mr-4 font-mono font-bold"
             >
-              <SoundWaveAnimation
-                :song="song"
-                :track-number="index + 1"
-              />
+              <SoundWaveAnimation :song="song" :track-number="index + 1" />
             </div>
             <div class="relative w-10 h-10 mr-4">
               <div
@@ -473,12 +477,15 @@ export default {
       isLoading.value = true;
 
       try {
-        const response = await fetch(`/api/media/playlists/${props.playlistId}`, {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`,
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `/api/media/playlists/${props.playlistId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authStore.token}`,
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
 
         if (fetchId !== activeFetchId) return;
 
@@ -541,7 +548,9 @@ export default {
         if (remainingTracks.length > 0) {
           playerStore.addMultipleToQueue(remainingTracks);
           alertStore.info(
-            t("playlist.addedToQueue", { name: `${remainingTracks.length} Songs` }),
+            t("playlist.addedToQueue", {
+              name: `${remainingTracks.length} Songs`,
+            }),
           );
         }
       }
@@ -609,7 +618,8 @@ export default {
 
         const metadataChanged =
           editableName.value !== currentPlaylist.value.name ||
-          editableDescription.value !== (currentPlaylist.value.description || "");
+          editableDescription.value !==
+            (currentPlaylist.value.description || "");
 
         const originalSongIds = songs.value.map((s) => s.id || s.song_id);
         const newSongIds = editableSongs.value.map((s) => s.id || s.song_id);
@@ -686,9 +696,7 @@ export default {
         await playlistStore.removeSongFromPlaylist(playlistId, songId);
 
         editableSongs.value = editableSongs.value.filter((_, i) => i !== index);
-        songs.value = songs.value.filter(
-          (s) => (s.id || s.song_id) !== songId,
-        );
+        songs.value = songs.value.filter((s) => (s.id || s.song_id) !== songId);
 
         alertStore.success(t("playlist.songRemoved"));
       } catch (error) {

@@ -1032,5 +1032,4 @@ export default {
   /* Hint to browser that transforms will be animated */
   will-change: transform;
 }
-
 </style>

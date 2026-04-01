@@ -4,23 +4,31 @@
     <div class="flex items-center justify-between mb-4">
       <div>
         <h3 class="text-white mb-1">
-          <i class="bi bi-lightning-charge mr-2"></i>{{ $t("admin.smartPlaylist.title") }}
+          <i class="bi bi-lightning-charge mr-2"></i
+          >{{ $t("admin.smartPlaylist.title") }}
         </h3>
         <p class="text-gray-400 mb-0">
           {{ $t("admin.smartPlaylist.subtitle") }}
         </p>
       </div>
-      <button v-if="!showForm"
+      <button
+        v-if="!showForm"
         class="inline-flex items-center gap-2 px-4 py-2 bg-audinary hover:bg-audinary/90 text-black rounded-lg transition-colors"
-        @click="openCreateForm">
+        @click="openCreateForm"
+      >
         <i class="bi bi-plus-lg"></i>
         {{ $t("admin.smartPlaylist.new") }}
       </button>
     </div>
 
     <!-- Create/Edit Form -->
-    <div v-if="showForm" class="bg-white/5 border border-white/10 rounded-lg mb-4">
-      <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+    <div
+      v-if="showForm"
+      class="bg-white/5 border border-white/10 rounded-lg mb-4"
+    >
+      <div
+        class="px-4 py-3 border-b border-white/10 flex items-center justify-between"
+      >
         <h5 class="mb-0">
           <i class="bi bi-lightning-charge mr-2"></i>
           {{
@@ -29,7 +37,10 @@
               : $t("admin.smartPlaylist.new")
           }}
         </h5>
-        <button class="text-gray-400 hover:text-white transition-colors" @click="closeForm">
+        <button
+          class="text-gray-400 hover:text-white transition-colors"
+          @click="closeForm"
+        >
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
@@ -38,39 +49,55 @@
         <div class="mb-4">
           <label class="block text-sm text-gray-300 mb-2">{{
             $t("admin.smartPlaylist.name")
-            }}</label>
-          <input type="text"
+          }}</label>
+          <input
+            type="text"
             class="bg-white/10 text-white border border-white/20 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
-            v-model="form.name" :placeholder="$t('admin.smartPlaylist.namePlaceholder')" />
+            v-model="form.name"
+            :placeholder="$t('admin.smartPlaylist.namePlaceholder')"
+          />
         </div>
 
         <!-- Description -->
         <div class="mb-4">
           <label class="block text-sm text-gray-300 mb-2">{{
             $t("admin.smartPlaylist.description")
-            }}</label>
-          <input type="text"
+          }}</label>
+          <input
+            type="text"
             class="bg-white/10 text-white border border-white/20 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-audinary focus:border-transparent"
-            v-model="form.description" :placeholder="$t('admin.smartPlaylist.descriptionPlaceholder')" />
+            v-model="form.description"
+            :placeholder="$t('admin.smartPlaylist.descriptionPlaceholder')"
+          />
         </div>
 
         <!-- Match Type -->
         <div class="mb-4">
           <label class="block text-sm text-gray-300 mb-2">{{
             $t("admin.smartPlaylist.matchType")
-            }}</label>
+          }}</label>
           <div class="flex gap-4">
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" v-model="form.match" value="all" class="form-radio text-audinary" />
+              <input
+                type="radio"
+                v-model="form.match"
+                value="all"
+                class="form-radio text-audinary"
+              />
               <span class="text-white">{{
                 $t("admin.smartPlaylist.matchAll")
-                }}</span>
+              }}</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" v-model="form.match" value="any" class="form-radio text-audinary" />
+              <input
+                type="radio"
+                v-model="form.match"
+                value="any"
+                class="form-radio text-audinary"
+              />
               <span class="text-white">{{
                 $t("admin.smartPlaylist.matchAny")
-                }}</span>
+              }}</span>
             </label>
           </div>
         </div>
@@ -79,20 +106,39 @@
         <div class="mb-4">
           <label class="block text-sm text-gray-300 mb-2">{{
             $t("admin.smartPlaylist.rules")
-            }}</label>
+          }}</label>
           <div class="space-y-2">
-            <div v-for="(rule, index) in form.conditions" :key="index"
-              class="flex items-center gap-2 bg-white/5 border border-white/10 rounded p-3">
+            <div
+              v-for="(rule, index) in form.conditions"
+              :key="index"
+              class="flex items-center gap-2 bg-white/5 border border-white/10 rounded p-3"
+            >
               <!-- Field -->
-              <select v-model="rule.field" class="text-sm min-w-[130px]" @change="onFieldChange(index)">
-                <option v-for="f in fieldOptions" :key="f.value" :value="f.value">
+              <select
+                v-model="rule.field"
+                class="text-sm min-w-[130px]"
+                @change="onFieldChange(index)"
+              >
+                <option
+                  v-for="f in fieldOptions"
+                  :key="f.value"
+                  :value="f.value"
+                >
                   {{ $t("admin.smartPlaylist.fields." + f.value) }}
                 </option>
               </select>
 
               <!-- Operator -->
-              <select v-if="getOperators(rule.field).length > 1" v-model="rule.operator" class="text-sm min-w-[120px]">
-                <option v-for="op in getOperators(rule.field)" :key="op.value" :value="op.value">
+              <select
+                v-if="getOperators(rule.field).length > 1"
+                v-model="rule.operator"
+                class="text-sm min-w-[120px]"
+              >
+                <option
+                  v-for="op in getOperators(rule.field)"
+                  :key="op.value"
+                  :value="op.value"
+                >
                   {{ $t("admin.smartPlaylist.operators." + op.value) }}
                 </option>
               </select>
@@ -114,70 +160,111 @@
                   <option value="" disabled>
                     {{ $t("admin.smartPlaylist.values.selectDecade") }}
                   </option>
-                  <option v-for="d in decades" :key="d.start_year" :value="d.start_year">
+                  <option
+                    v-for="d in decades"
+                    :key="d.start_year"
+                    :value="d.start_year"
+                  >
                     {{ d.decade }} ({{ d.album_count }}
                     {{ $t("admin.smartPlaylist.values.albums") }})
                   </option>
                 </select>
               </template>
 
-              <template v-else-if="rule.field === 'year' && rule.operator === 'between'">
-                <input type="number" v-model.number="rule.value[0]"
+              <template
+                v-else-if="rule.field === 'year' && rule.operator === 'between'"
+              >
+                <input
+                  type="number"
+                  v-model.number="rule.value[0]"
                   class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-24"
-                  :placeholder="$t('admin.smartPlaylist.values.from')" />
+                  :placeholder="$t('admin.smartPlaylist.values.from')"
+                />
                 <span class="text-gray-400">–</span>
-                <input type="number" v-model.number="rule.value[1]"
+                <input
+                  type="number"
+                  v-model.number="rule.value[1]"
                   class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-24"
-                  :placeholder="$t('admin.smartPlaylist.values.to')" />
+                  :placeholder="$t('admin.smartPlaylist.values.to')"
+                />
               </template>
 
               <template v-else-if="rule.field === 'year'">
-                <input type="number" v-model.number="rule.value"
-                  class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm flex-1" :placeholder="$t('admin.smartPlaylist.values.yearPlaceholder')
-                    " />
+                <input
+                  type="number"
+                  v-model.number="rule.value"
+                  class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm flex-1"
+                  :placeholder="
+                    $t('admin.smartPlaylist.values.yearPlaceholder')
+                  "
+                />
               </template>
 
               <template v-else-if="rule.field === 'artist'">
-                <input type="text" v-model="rule.value"
-                  class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm flex-1" :placeholder="$t('admin.smartPlaylist.values.artistPlaceholder')
-                    " />
+                <input
+                  type="text"
+                  v-model="rule.value"
+                  class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm flex-1"
+                  :placeholder="
+                    $t('admin.smartPlaylist.values.artistPlaceholder')
+                  "
+                />
               </template>
 
               <template v-else-if="rule.field === 'is_favorite'">
                 <span class="text-audinary text-sm">{{
                   $t("admin.smartPlaylist.values.onlyFavorites")
-                  }}</span>
+                }}</span>
               </template>
 
               <template v-else-if="rule.field === 'last_played'">
-                <input v-if="rule.operator !== 'never'" type="number" v-model.number="rule.value"
+                <input
+                  v-if="rule.operator !== 'never'"
+                  type="number"
+                  v-model.number="rule.value"
                   class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-24"
-                  placeholder="30" min="1" />
-                <span v-if="rule.operator !== 'never'" class="text-gray-400 text-sm">{{
-                  $t("admin.smartPlaylist.values.days") }}</span>
+                  placeholder="30"
+                  min="1"
+                />
+                <span
+                  v-if="rule.operator !== 'never'"
+                  class="text-gray-400 text-sm"
+                  >{{ $t("admin.smartPlaylist.values.days") }}</span
+                >
               </template>
 
               <template v-else-if="rule.field === 'recently_added'">
-                <input type="number" v-model.number="rule.value"
+                <input
+                  type="number"
+                  v-model.number="rule.value"
                   class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-24"
-                  placeholder="30" min="1" />
+                  placeholder="30"
+                  min="1"
+                />
                 <span class="text-gray-400 text-sm">{{
                   $t("admin.smartPlaylist.values.days")
-                  }}</span>
+                }}</span>
               </template>
 
               <template v-else-if="rule.field === 'duration'">
-                <input type="number" v-model.number="rule.value"
+                <input
+                  type="number"
+                  v-model.number="rule.value"
                   class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-24"
-                  placeholder="300" min="1" />
+                  placeholder="300"
+                  min="1"
+                />
                 <span class="text-gray-400 text-sm">{{
                   $t("admin.smartPlaylist.values.seconds")
-                  }}</span>
+                }}</span>
               </template>
 
               <!-- Remove Rule Button -->
-              <button class="text-red-400 hover:text-red-300 p-1 transition-colors" @click="removeRule(index)"
-                :disabled="form.conditions.length <= 1">
+              <button
+                class="text-red-400 hover:text-red-300 p-1 transition-colors"
+                @click="removeRule(index)"
+                :disabled="form.conditions.length <= 1"
+              >
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -185,7 +272,8 @@
 
           <button
             class="mt-2 inline-flex items-center gap-1 text-sm text-audinary hover:text-audinary/80 transition-colors"
-            @click="addRule">
+            @click="addRule"
+          >
             <i class="bi bi-plus-circle"></i>
             {{ $t("admin.smartPlaylist.addRule") }}
           </button>
@@ -196,7 +284,7 @@
           <div>
             <label class="block text-sm text-gray-300 mb-2">{{
               $t("admin.smartPlaylist.sorting")
-              }}</label>
+            }}</label>
             <select v-model="form.smart_sort_by" class="text-sm w-full">
               <option value="">
                 {{ $t("admin.smartPlaylist.sortDefault") }}
@@ -209,7 +297,7 @@
           <div>
             <label class="block text-sm text-gray-300 mb-2">{{
               $t("admin.smartPlaylist.sortDirection")
-              }}</label>
+            }}</label>
             <select v-model="form.smart_sort_direction" class="text-sm w-full">
               <option value="asc">{{ $t("common.ascending") }}</option>
               <option value="desc">{{ $t("common.descending") }}</option>
@@ -218,47 +306,65 @@
           <div>
             <label class="block text-sm text-gray-300 mb-2">{{
               $t("admin.smartPlaylist.maxSongs")
-              }}</label>
-            <input type="number" v-model.number="form.smart_limit"
-              class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-full" placeholder="250"
-              min="1" max="250" />
+            }}</label>
+            <input
+              type="number"
+              v-model.number="form.smart_limit"
+              class="bg-white/10 text-white border border-white/20 rounded px-2 py-1.5 text-sm w-full"
+              placeholder="250"
+              min="1"
+              max="250"
+            />
           </div>
         </div>
 
         <!-- Preview -->
-        <div v-if="previewStats !== null" class="mb-4 bg-white/5 border border-white/10 rounded p-3 text-sm">
+        <div
+          v-if="previewStats !== null"
+          class="mb-4 bg-white/5 border border-white/10 rounded p-3 text-sm"
+        >
           <i class="bi bi-eye mr-1 text-audinary"></i>
           <span class="text-white">{{
             $t("admin.smartPlaylist.previewLabel")
-            }}</span>
+          }}</span>
           <span class="text-audinary font-semibold ml-1">{{
             previewStats.song_count
-            }}</span>
+          }}</span>
           <span class="text-gray-400"> {{ $t("common.songs") }}</span>
-          <span class="text-gray-400 ml-2">({{ formatDuration(previewStats.duration) }})</span>
+          <span class="text-gray-400 ml-2"
+            >({{ formatDuration(previewStats.duration) }})</span
+          >
         </div>
 
         <!-- Actions -->
         <div class="flex items-center gap-3">
           <button
             class="px-4 py-2 bg-audinary hover:bg-audinary/90 text-black rounded-lg transition-colors disabled:opacity-50"
-            @click="savePlaylist" :disabled="!canSave || isSaving">
-            <span v-if="isSaving"
-              class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></span>
+            @click="savePlaylist"
+            :disabled="!canSave || isSaving"
+          >
+            <span
+              v-if="isSaving"
+              class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"
+            ></span>
             {{
               editingId
                 ? $t("admin.smartPlaylist.save")
                 : $t("admin.smartPlaylist.create")
             }}
           </button>
-          <button class="px-4 py-2 text-sm text-audinary hover:bg-white/10 rounded-lg transition-colors"
-            @click="loadPreview" :disabled="!hasValidRules">
+          <button
+            class="px-4 py-2 text-sm text-audinary hover:bg-white/10 rounded-lg transition-colors"
+            @click="loadPreview"
+            :disabled="!hasValidRules"
+          >
             <i class="bi bi-eye mr-1"></i>
             {{ $t("admin.smartPlaylist.preview") }}
           </button>
           <button
             class="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            @click="closeForm">
+            @click="closeForm"
+          >
             {{ $t("admin.smartPlaylist.cancel") }}
           </button>
         </div>
@@ -268,13 +374,18 @@
     <!-- Playlists List -->
     <div v-if="!showForm" class="space-y-3">
       <div v-if="loading" class="text-center py-8">
-        <div class="w-8 h-8 border-4 border-t-transparent border-audinary rounded-full animate-spin mx-auto"></div>
+        <div
+          class="w-8 h-8 border-4 border-t-transparent border-audinary rounded-full animate-spin mx-auto"
+        ></div>
         <p class="mt-3 text-gray-400">
           {{ $t("admin.smartPlaylist.loading") }}
         </p>
       </div>
 
-      <div v-else-if="playlists.length === 0" class="bg-white/5 border border-white/10 rounded-lg p-8 text-center">
+      <div
+        v-else-if="playlists.length === 0"
+        class="bg-white/5 border border-white/10 rounded-lg p-8 text-center"
+      >
         <i class="bi bi-lightning-charge text-gray-500 text-6xl mb-3"></i>
         <h4 class="text-white mb-2">
           {{ $t("admin.smartPlaylist.noPlaylists") }}
@@ -282,15 +393,20 @@
         <p class="text-gray-400 mb-4">
           {{ $t("admin.smartPlaylist.noPlaylistsDesc") }}
         </p>
-        <button class="px-4 py-2 bg-audinary hover:bg-audinary/90 text-black rounded-lg transition-colors"
-          @click="openCreateForm">
+        <button
+          class="px-4 py-2 bg-audinary hover:bg-audinary/90 text-black rounded-lg transition-colors"
+          @click="openCreateForm"
+        >
           <i class="bi bi-plus-lg mr-1"></i>
           {{ $t("admin.smartPlaylist.createFirst") }}
         </button>
       </div>
 
-      <div v-for="playlist in playlists" :key="playlist.id"
-        class="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/8 transition-colors">
+      <div
+        v-for="playlist in playlists"
+        :key="playlist.id"
+        class="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/8 transition-colors"
+      >
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
@@ -298,9 +414,15 @@
               <h5 class="text-white font-semibold truncate mb-0">
                 {{ playlist.name }}
               </h5>
-              <span class="text-xs bg-audinary/20 text-audinary px-2 py-0.5 rounded-full">Smart</span>
+              <span
+                class="text-xs bg-audinary/20 text-audinary px-2 py-0.5 rounded-full"
+                >Smart</span
+              >
             </div>
-            <p v-if="playlist.description" class="text-gray-400 text-sm mb-1 truncate">
+            <p
+              v-if="playlist.description"
+              class="text-gray-400 text-sm mb-1 truncate"
+            >
               {{ playlist.description }}
             </p>
             <div class="flex items-center gap-4 text-sm text-gray-400">
@@ -328,20 +450,32 @@
               </span>
             </div>
             <!-- Rules Summary -->
-            <div v-if="playlist.rules && playlist.rules.conditions" class="flex flex-wrap gap-1 mt-2">
-              <span v-for="(cond, i) in playlist.rules.conditions" :key="i"
-                class="text-xs bg-white/5 border border-white/10 text-gray-300 px-2 py-0.5 rounded-full">
+            <div
+              v-if="playlist.rules && playlist.rules.conditions"
+              class="flex flex-wrap gap-1 mt-2"
+            >
+              <span
+                v-for="(cond, i) in playlist.rules.conditions"
+                :key="i"
+                class="text-xs bg-white/5 border border-white/10 text-gray-300 px-2 py-0.5 rounded-full"
+              >
                 {{ formatCondition(cond) }}
               </span>
             </div>
           </div>
           <div class="flex items-center gap-2 ml-4">
-            <button class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
-              @click="editPlaylist(playlist)" :title="$t('common.edit')">
+            <button
+              class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
+              @click="editPlaylist(playlist)"
+              :title="$t('common.edit')"
+            >
               <i class="bi bi-pencil"></i>
             </button>
-            <button class="p-2 text-gray-400 hover:text-red-400 hover:bg-white/10 rounded transition-colors"
-              @click="confirmDelete(playlist)" :title="$t('common.delete')">
+            <button
+              class="p-2 text-gray-400 hover:text-red-400 hover:bg-white/10 rounded transition-colors"
+              @click="confirmDelete(playlist)"
+              :title="$t('common.delete')"
+            >
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -350,10 +484,15 @@
     </div>
 
     <!-- Delete Confirmation -->
-    <div v-if="showDeleteConfirm"
+    <div
+      v-if="showDeleteConfirm"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-      @click="showDeleteConfirm = false">
-      <div class="w-full max-w-md bg-gray-900 border border-white/10 rounded-lg p-6" @click.stop>
+      @click="showDeleteConfirm = false"
+    >
+      <div
+        class="w-full max-w-md bg-gray-900 border border-white/10 rounded-lg p-6"
+        @click.stop
+      >
         <h5 class="text-white mb-3">
           {{ $t("admin.smartPlaylist.deleteConfirm") }}
         </h5>
@@ -367,11 +506,14 @@
         <div class="flex justify-end gap-3">
           <button
             class="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            @click="showDeleteConfirm = false">
+            @click="showDeleteConfirm = false"
+          >
             {{ $t("admin.smartPlaylist.cancel") }}
           </button>
-          <button class="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-            @click="deletePlaylist">
+          <button
+            class="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+            @click="deletePlaylist"
+          >
             {{ $t("common.delete") }}
           </button>
         </div>

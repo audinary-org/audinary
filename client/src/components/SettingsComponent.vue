@@ -212,10 +212,7 @@
               <label class="block text-sm font-medium text-white mb-2">{{
                 $t("settings.session.timeout")
               }}</label>
-              <select
-                v-model="formData.sessionTimeout"
-                class="w-full"
-              >
+              <select v-model="formData.sessionTimeout" class="w-full">
                 <option value="31536000">
                   {{ $t("settings.session.timeouts.off") }}
                 </option>
@@ -345,10 +342,7 @@
                 <label class="block text-sm font-medium text-white mb-2">{{
                   $t("settings.transcoding.quality")
                 }}</label>
-                <select
-                  v-model="formData.transcodingQuality"
-                  class="w-full"
-                >
+                <select v-model="formData.transcodingQuality" class="w-full">
                   <option
                     v-for="option in qualityOptions"
                     :key="option.value"

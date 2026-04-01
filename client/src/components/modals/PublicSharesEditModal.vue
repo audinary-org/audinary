@@ -54,10 +54,7 @@
           <label class="block text-sm font-medium text-gray-300 mb-2">
             {{ $t("shares.expires") }}
           </label>
-          <select
-            v-model="shareData.expires_at"
-            class="w-full"
-          >
+          <select v-model="shareData.expires_at" class="w-full">
             <option :value="null">{{ $t("shares.expiration_never") }}</option>
             <option value="+1 hour">
               {{ $t("shares.expiration_1_hour") }}

@@ -190,10 +190,7 @@
               <label class="block text-sm font-medium text-gray-300 mb-2">
                 {{ $t("admin.wishlist.status") }}
               </label>
-              <select
-                v-model="editForm.status"
-                class="w-full"
-              >
+              <select v-model="editForm.status" class="w-full">
                 <option value="pending">
                   {{ $t("wishlist.status.pending") }}
                 </option>

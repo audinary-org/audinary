@@ -36,9 +36,7 @@
                 {{ albumTitle }}
               </h1>
               <p class="text-lg text-white/80 mb-2">{{ albumArtist }}</p>
-              <div
-                class="flex flex-wrap gap-4 text-sm text-white/70"
-              >
+              <div class="flex flex-wrap gap-4 text-sm text-white/70">
                 <span>{{ albumYear }}</span>
                 <span>&#8226;</span>
                 <span>{{ trackCount }} {{ $t("common.songs") }}</span>
@@ -131,8 +129,7 @@
               <i class="bi bi-disc mr-2"></i>
               CD {{ disc.discNumber }}
               <small class="text-gray-400 ml-2"
-                >({{ disc.tracks.length }}
-                {{ $t("common.songs") }})</small
+                >({{ disc.tracks.length }} {{ $t("common.songs") }})</small
               >
             </h6>
             <div class="space-y-1">
@@ -173,9 +170,7 @@
                     @click.stop="showPlaylistAddToModal(track)"
                     :title="$t('songs.add_to_playlist')"
                   >
-                    <i
-                      class="bi bi-music-note-list text-xs text-white"
-                    ></i>
+                    <i class="bi bi-music-note-list text-xs text-white"></i>
                   </button>
                   <button
                     class="w-8 h-8 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center transition-all hover:scale-110"
@@ -321,9 +316,15 @@ export default {
 
     // Computed properties
     const albumTitle = computed(
-      () => albumData.value?.albumName || albumData.value?.album_name || "Album Title",
+      () =>
+        albumData.value?.albumName ||
+        albumData.value?.album_name ||
+        "Album Title",
     );
-    const albumArtist = computed(() => albumData.value?.albumArtist || albumData.value?.album_artist || "--");
+    const albumArtist = computed(
+      () =>
+        albumData.value?.albumArtist || albumData.value?.album_artist || "--",
+    );
     const albumYear = computed(
       () => albumData.value?.albumYear || albumData.value?.year || "--",
     );

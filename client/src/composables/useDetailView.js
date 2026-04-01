@@ -10,8 +10,7 @@ export function useDetailView() {
   const isShowingDetail = computed(() => !!route.query.detail);
 
   function openAlbumDetail(albumOrId) {
-    const id =
-      typeof albumOrId === "object" ? albumOrId.album_id : albumOrId;
+    const id = typeof albumOrId === "object" ? albumOrId.album_id : albumOrId;
     router.push({
       query: { ...route.query, detail: "album", detailId: id },
     });

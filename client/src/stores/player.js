@@ -90,14 +90,17 @@ export const usePlayerStore = defineStore("player", () => {
     ) {
       return actualPlayQueue.value.length;
     }
-    return actualPlayQueue.value.length - currentSongIndexInActualPlayQueue.value - 1;
+    return (
+      actualPlayQueue.value.length - currentSongIndexInActualPlayQueue.value - 1
+    );
   });
 
   // First 5 upcoming songs — use for previews without allocating the full array
   const upcomingQueuePreview = computed(() => {
-    const start = currentSongIndexInActualPlayQueue.value === -1
-      ? 0
-      : currentSongIndexInActualPlayQueue.value + 1;
+    const start =
+      currentSongIndexInActualPlayQueue.value === -1
+        ? 0
+        : currentSongIndexInActualPlayQueue.value + 1;
     return actualPlayQueue.value.slice(start, start + 5);
   });
 
@@ -127,8 +130,7 @@ export const usePlayerStore = defineStore("player", () => {
       return true;
     if (repeatMode.value === "one") return true;
     return (
-      currentSongIndexInActualPlayQueue.value <
-      actualPlayQueue.value.length - 1
+      currentSongIndexInActualPlayQueue.value < actualPlayQueue.value.length - 1
     );
   });
 
@@ -148,7 +150,8 @@ export const usePlayerStore = defineStore("player", () => {
   const nextSongInQueue = computed(() => {
     const nextIndex = getNextSongIndex({
       actualPlayQueue: actualPlayQueue.value,
-      currentSongIndexInActualPlayQueue: currentSongIndexInActualPlayQueue.value,
+      currentSongIndexInActualPlayQueue:
+        currentSongIndexInActualPlayQueue.value,
       repeatMode: repeatMode.value,
     });
     return nextIndex !== -1 ? actualPlayQueue.value[nextIndex] : null;
@@ -392,10 +395,7 @@ export const usePlayerStore = defineStore("player", () => {
       equalizerGains.value[freq] = parseFloat(gain);
 
       // Update the actual filter
-      if (
-        equalizerFilters[parseInt(frequency)] &&
-        equalizerEnabled.value
-      ) {
+      if (equalizerFilters[parseInt(frequency)] && equalizerEnabled.value) {
         equalizerFilters[parseInt(frequency)].gain.value = gain;
       }
 
@@ -731,9 +731,7 @@ export const usePlayerStore = defineStore("player", () => {
     const existingIds = new Set(
       originalOrderQueue.value.map((q) => q.song_id || q.id),
     );
-    const newSongs = songs.filter(
-      (s) => !existingIds.has(s.song_id || s.id),
-    );
+    const newSongs = songs.filter((s) => !existingIds.has(s.song_id || s.id));
     if (newSongs.length === 0) return;
 
     // Add all new songs at once
@@ -752,7 +750,11 @@ export const usePlayerStore = defineStore("player", () => {
             (songToMaintain.song_id || songToMaintain.id),
         );
         currentSongIndexInActualPlayQueue.value =
-          newIndex !== -1 ? newIndex : actualPlayQueue.value.length > 0 ? 0 : -1;
+          newIndex !== -1
+            ? newIndex
+            : actualPlayQueue.value.length > 0
+              ? 0
+              : -1;
       } else if (
         actualPlayQueue.value.length > 0 &&
         currentSongIndexInActualPlayQueue.value === -1
@@ -809,8 +811,7 @@ export const usePlayerStore = defineStore("player", () => {
         const newIndexOfMaintained = actualPlayQueue.value.findIndex(
           (s) =>
             (s.song_id || s.id) ===
-            (songToMaintainAfterRemove.song_id ||
-              songToMaintainAfterRemove.id),
+            (songToMaintainAfterRemove.song_id || songToMaintainAfterRemove.id),
         );
         if (newIndexOfMaintained !== -1) {
           currentSongIndexInActualPlayQueue.value = newIndexOfMaintained;
@@ -851,10 +852,7 @@ export const usePlayerStore = defineStore("player", () => {
               ? index
               : actualPlayQueue.value.length - 1;
           if (nextIndexToPlay >= 0) {
-            playSong(
-              actualPlayQueue.value[nextIndexToPlay],
-              nextIndexToPlay,
-            );
+            playSong(actualPlayQueue.value[nextIndexToPlay], nextIndexToPlay);
           } else {
             resetPlayer();
           }
@@ -874,8 +872,7 @@ export const usePlayerStore = defineStore("player", () => {
             // CurrentSong nicht mehr da (sollte nicht sein, wenn nicht isRemovingCurrentSong)
             currentSongIndexInActualPlayQueue.value =
               actualPlayQueue.value.length > 0 ? 0 : -1;
-            if (currentSongIndexInActualPlayQueue.value === -1)
-              resetPlayer();
+            if (currentSongIndexInActualPlayQueue.value === -1) resetPlayer();
           }
         } else {
           currentSongIndexInActualPlayQueue.value = -1; // Kein aktueller Song
@@ -966,7 +963,10 @@ export const usePlayerStore = defineStore("player", () => {
       // Remove songs from history and add to queue
       const removedSongs = previousQueue.value.slice(index);
       previousQueue.value = previousQueue.value.slice(0, index);
-      actualPlayQueue.value = [...removedSongs.reverse(), ...actualPlayQueue.value];
+      actualPlayQueue.value = [
+        ...removedSongs.reverse(),
+        ...actualPlayQueue.value,
+      ];
       currentSongIndexInActualPlayQueue.value = index;
       playSong(song, currentSongIndexInActualPlayQueue.value);
     }
@@ -1067,10 +1067,7 @@ export const usePlayerStore = defineStore("player", () => {
         isTransitioningSong.value = true;
         currentHowl.seek(0);
         currentHowl.play();
-        showNotification(
-          getI18nMessage("player.repeatCurrentSong"),
-          2000,
-        );
+        showNotification(getI18nMessage("player.repeatCurrentSong"), 2000);
       }
       return;
     }
@@ -1117,9 +1114,7 @@ export const usePlayerStore = defineStore("player", () => {
               );
           }
         })
-        .catch((err) =>
-          handleError("navigating to next MPD track", err),
-        );
+        .catch((err) => handleError("navigating to next MPD track", err));
       return;
     }
 
@@ -1206,9 +1201,7 @@ export const usePlayerStore = defineStore("player", () => {
               );
           }
         })
-        .catch((err) =>
-          handleError("navigating to previous MPD track", err),
-        );
+        .catch((err) => handleError("navigating to previous MPD track", err));
       return; // MPD handelt anders
     }
 
@@ -1217,10 +1210,7 @@ export const usePlayerStore = defineStore("player", () => {
       previousQueue.value.length === 0
     ) {
       console.warn("[prevSong] actualPlayQueue and previousQueue are empty.");
-      showNotification(
-        getI18nMessage("player.noPreviousSongAvailable"),
-        2000,
-      );
+      showNotification(getI18nMessage("player.noPreviousSongAvailable"), 2000);
       return;
     }
 
@@ -1252,16 +1242,23 @@ export const usePlayerStore = defineStore("player", () => {
       if (prevIndex < 0) {
         // Wenn wir am Anfang der actualPlayQueue sind, prüfe previousQueue (History)
         if (previousQueue.value.length > 0) {
-          const songFromHistory = previousQueue.value[previousQueue.value.length - 1]; // Nimm letzten aus History
+          const songFromHistory =
+            previousQueue.value[previousQueue.value.length - 1]; // Nimm letzten aus History
           previousQueue.value = previousQueue.value.slice(0, -1);
           // Füge aktuellen Song (falls vorhanden) an den Anfang der actualPlayQueue (wird zu History für nächsten prev)
           if (currentSong.value) {
-            actualPlayQueue.value = [currentSong.value, ...actualPlayQueue.value];
+            actualPlayQueue.value = [
+              currentSong.value,
+              ...actualPlayQueue.value,
+            ];
             // Da wir an den Anfang von actualPlayQueue unshift-en und dann songFromHistory spielen (der dann auch wieder in die actualPlayQueue kommt),
             // müssen wir aufpassen, dass der Index aktuell bleibt.
             // Besser: aktuellen in History, songFromHistory an Anfang der originalOrderQueue und actualPlayQueue neu bilden.
           }
-          originalOrderQueue.value = [songFromHistory, ...originalOrderQueue.value]; // Füge ihn an den Anfang der Master-Liste
+          originalOrderQueue.value = [
+            songFromHistory,
+            ...originalOrderQueue.value,
+          ]; // Füge ihn an den Anfang der Master-Liste
           actualPlayQueue.value = [...originalOrderQueue.value]; // Aktualisiere Play-Queue
           prevIndex = 0; // Der Song aus der History ist jetzt der erste
           currentSongIndexInActualPlayQueue.value = -1; // Erzwinge, dass playSong den neuen Index setzt und currentSong aktualisiert
@@ -1366,17 +1363,11 @@ export const usePlayerStore = defineStore("player", () => {
     switch (repeatMode.value) {
       case "none":
         repeatMode.value = "one";
-        showNotification(
-          getI18nMessage("player.singleRepeatEnabled"),
-          2000,
-        );
+        showNotification(getI18nMessage("player.singleRepeatEnabled"), 2000);
         break;
       case "one":
         repeatMode.value = "all";
-        showNotification(
-          getI18nMessage("player.playlistRepeatEnabled"),
-          2000,
-        );
+        showNotification(getI18nMessage("player.playlistRepeatEnabled"), 2000);
         break;
       case "all":
         repeatMode.value = "none";
@@ -1478,15 +1469,10 @@ export const usePlayerStore = defineStore("player", () => {
       if (isLocalMode.value) {
         showNotification(getI18nMessage("player.playingOnServer"), 2000);
         if (currentSong.value) {
-          await playMpdSong(
-            currentSong.value.song_id || currentSong.value.id,
-          );
+          await playMpdSong(currentSong.value.song_id || currentSong.value.id);
         }
       } else {
-        showNotification(
-          getI18nMessage("player.playingInBrowser"),
-          2000,
-        );
+        showNotification(getI18nMessage("player.playingInBrowser"), 2000);
         await stopMpdPlayback();
         if (currentSong.value) {
           await playHowlerSong(currentSong.value);
@@ -1741,18 +1727,12 @@ export const usePlayerStore = defineStore("player", () => {
       });
 
       // Set action handlers
-      navigator.mediaSession.setActionHandler("play", () =>
-        togglePlayPause(),
-      );
-      navigator.mediaSession.setActionHandler("pause", () =>
-        togglePlayPause(),
-      );
+      navigator.mediaSession.setActionHandler("play", () => togglePlayPause());
+      navigator.mediaSession.setActionHandler("pause", () => togglePlayPause());
       navigator.mediaSession.setActionHandler("previoustrack", () =>
         prevSong(),
       );
-      navigator.mediaSession.setActionHandler("nexttrack", () =>
-        nextSong(),
-      );
+      navigator.mediaSession.setActionHandler("nexttrack", () => nextSong());
 
       try {
         navigator.mediaSession.setActionHandler("seekto", (details) => {
@@ -1832,9 +1812,7 @@ export const usePlayerStore = defineStore("player", () => {
         repeatMode.value = state.repeatMode || "none";
         isLocalMode.value = state.isLocalMode || false;
         equalizerEnabled.value =
-          state.equalizerEnabled !== undefined
-            ? state.equalizerEnabled
-            : true;
+          state.equalizerEnabled !== undefined ? state.equalizerEnabled : true;
         if (state.equalizerGains) {
           equalizerGains.value = {
             ...equalizerGains.value,

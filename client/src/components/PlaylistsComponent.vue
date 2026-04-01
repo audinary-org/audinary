@@ -94,7 +94,9 @@
                   v-if="playlist.type === 'smart'"
                   class="absolute top-2 left-2 px-2 py-0.5 bg-purple-600/80 backdrop-blur-sm rounded-full flex items-center gap-1 z-[10]"
                 >
-                  <i class="bi bi-lightning-fill text-[10px] text-yellow-300"></i>
+                  <i
+                    class="bi bi-lightning-fill text-[10px] text-yellow-300"
+                  ></i>
                   <span class="text-[10px] text-white font-medium">Smart</span>
                 </div>
 
@@ -220,8 +222,14 @@
                         <h5
                           class="text-lg text-audinary font-bold mb-0 truncate"
                         >
-                          <span v-if="playlist.type === 'smart'" class="inline-flex items-center gap-1 mr-1 px-1.5 py-0.5 bg-purple-600/60 rounded text-xs text-white font-medium align-middle">
-                            <i class="bi bi-lightning-fill text-yellow-300 text-[10px]"></i> Smart
+                          <span
+                            v-if="playlist.type === 'smart'"
+                            class="inline-flex items-center gap-1 mr-1 px-1.5 py-0.5 bg-purple-600/60 rounded text-xs text-white font-medium align-middle"
+                          >
+                            <i
+                              class="bi bi-lightning-fill text-yellow-300 text-[10px]"
+                            ></i>
+                            Smart
                           </span>
                           {{ playlist.name }}
                         </h5>

@@ -131,10 +131,7 @@
                   <label class="block text-sm font-medium text-gray-300 mb-2">
                     {{ $t("playlist.permission") }}
                   </label>
-                  <select
-                    v-model="newUserPermission"
-                    class="w-full"
-                  >
+                  <select v-model="newUserPermission" class="w-full">
                     <option value="view">{{ $t("playlist.viewOnly") }}</option>
                     <option value="edit">{{ $t("playlist.canEdit") }}</option>
                   </select>

@@ -33,7 +33,7 @@ export default {
       return (
         playerStore?.currentSong &&
         playerStore.currentSong.song_id ===
-        (props.song.song_id || props.song.id)
+          (props.song.song_id || props.song.id)
       );
     });
 
