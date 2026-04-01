@@ -156,7 +156,7 @@ class CodecValidationService
         if ($output) {
             $lines = explode("\n", $output);
             foreach ($lines as $line) {
-                if (in_array(preg_match('/\s+([DE]+)\s+(\w+)\s+(.+)/', $line, $matches), [0, false], true)) {
+                if (preg_match('/\s+([DE]+)\s+(\w+)\s+(.+)/', $line, $matches) !== 1) {
                     continue;
                 }
                 if (strpos($matches[1], 'E') === false) {
