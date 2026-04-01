@@ -32,9 +32,10 @@ final class PlaylistSong implements JsonSerializable
             throw new InvalidArgumentException('Invalid playlist song ID');
         }
 
-        if (!isset($data['playlist_id']) || !is_string($data['playlist_id']) || trim($data['playlist_id']) === '') {
+        if (!isset($data['playlist_id']) || (string) $data['playlist_id'] === '') {
             throw new InvalidArgumentException('Invalid playlist ID');
         }
+        $data['playlist_id'] = (string) $data['playlist_id'];
 
         if (!isset($data['song_id']) || !is_string($data['song_id']) || trim($data['song_id']) === '') {
             throw new InvalidArgumentException('Invalid song ID');

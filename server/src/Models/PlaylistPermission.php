@@ -37,9 +37,10 @@ final class PlaylistPermission implements JsonSerializable
             throw new InvalidArgumentException('Invalid permission ID');
         }
 
-        if (!isset($data['playlist_id']) || !is_string($data['playlist_id']) || trim($data['playlist_id']) === '') {
+        if (!isset($data['playlist_id']) || (string) $data['playlist_id'] === '') {
             throw new InvalidArgumentException('Invalid playlist ID');
         }
+        $data['playlist_id'] = (string) $data['playlist_id'];
 
         if (!isset($data['user_id']) || !is_string($data['user_id']) || trim($data['user_id']) === '') {
             throw new InvalidArgumentException('Invalid user ID');
@@ -121,9 +122,10 @@ final class PlaylistPermission implements JsonSerializable
      */
     public static function createData(array $data): array
     {
-        if (!isset($data['playlist_id']) || !is_string($data['playlist_id']) || trim($data['playlist_id']) === '') {
+        if (!isset($data['playlist_id']) || (string) $data['playlist_id'] === '') {
             throw new InvalidArgumentException('Invalid playlist ID');
         }
+        $data['playlist_id'] = (string) $data['playlist_id'];
 
         if (!isset($data['user_id']) || !is_string($data['user_id']) || trim($data['user_id']) === '') {
             throw new InvalidArgumentException('Invalid user ID');

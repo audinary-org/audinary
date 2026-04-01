@@ -48,9 +48,10 @@ final class Playlist implements JsonSerializable
      */
     private function validateAndSetData(array $data): void
     {
-        if (!isset($data['id']) || !is_string($data['id']) || trim($data['id']) === '') {
+        if (!isset($data['id']) || (string) $data['id'] === '') {
             throw new InvalidArgumentException('Invalid playlist ID');
         }
+        $data['id'] = (string) $data['id'];
 
         if (!isset($data['user_id']) || !is_string($data['user_id']) || trim($data['user_id']) === '') {
             throw new InvalidArgumentException('Invalid user ID');

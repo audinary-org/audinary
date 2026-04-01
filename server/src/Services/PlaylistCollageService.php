@@ -212,7 +212,6 @@ final class PlaylistCollageService
 
         // Save as WebP
         $success = imagewebp($canvas, $outputPath, 90);
-        imagedestroy($canvas);
 
         if (!$success) {
             throw new Exception("Failed to save WebP image");
@@ -247,16 +246,11 @@ final class PlaylistCollageService
         // Resize image to tile size
         $resized = imagescale($cover, $size, $size, IMG_BICUBIC);
         if (!$resized) {
-            imagedestroy($cover);
             throw new Exception("Could not resize image");
         }
 
         // Copy to canvas
         imagecopy($canvas, $resized, $x, $y, 0, 0, $size, $size);
-
-        // Free memory
-        imagedestroy($cover);
-        imagedestroy($resized);
     }
 
     /**

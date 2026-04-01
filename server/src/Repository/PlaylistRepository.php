@@ -170,16 +170,15 @@ final class PlaylistRepository extends BaseRepository
     public function create(array $data): Playlist
     {
         $playlistData = Playlist::createData($data);
-        $id = $this->generateUuid();
         $type = $playlistData['type'] ?? 'user';
 
         if ($type === 'smart') {
             $stmt = $this->db->prepare('
-                INSERT INTO playlists (id, name, description, user_id, type, rules, smart_sort_by, smart_sort_direction, smart_limit)
-                VALUES (?, ?, ?, ?, ?, ?::jsonb, ?, ?, ?)
+                INSERT INTO playlists (name, description, user_id, type, rules, smart_sort_by, smart_sort_direction, smart_limit)
+                VALUES (?, ?, ?, ?, ?::jsonb, ?, ?, ?)
+                RETURNING id
             ');
             $result = $stmt->execute([
-                $id,
                 $playlistData['name'],
                 $playlistData['description'],
                 $playlistData['user_id'],
@@ -191,11 +190,11 @@ final class PlaylistRepository extends BaseRepository
             ]);
         } else {
             $stmt = $this->db->prepare('
-                INSERT INTO playlists (id, name, description, user_id, type)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO playlists (name, description, user_id, type)
+                VALUES (?, ?, ?, ?)
+                RETURNING id
             ');
             $result = $stmt->execute([
-                $id,
                 $playlistData['name'],
                 $playlistData['description'],
                 $playlistData['user_id'],
@@ -207,6 +206,9 @@ final class PlaylistRepository extends BaseRepository
             error_log("Playlist creation failed: " . json_encode($stmt->errorInfo()));
             throw new Exception("Failed to create playlist");
         }
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $id = (string) $row['id'];
 
         $playlist = $this->findById($id);
         if (!$playlist instanceof \App\Models\Playlist) {

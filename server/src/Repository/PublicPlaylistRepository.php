@@ -104,7 +104,7 @@ class PublicPlaylistRepository
                     u.username as creator_username,
                     u.display_name as creator_display_name
                 FROM playlist_public_links ppl
-                JOIN playlists p ON ppl.playlist_id = p.playlist_id
+                JOIN playlists p ON ppl.playlist_id = p.id
                 JOIN users u ON ppl.created_by_user_id = u.user_id
                 WHERE ppl.link_uuid = :link_uuid
                 AND ppl.is_active = 1
@@ -182,7 +182,7 @@ class PublicPlaylistRepository
             $stmt = $this->db->prepare("
                 SELECT ppl.id
                 FROM playlist_public_links ppl
-                JOIN playlists p ON ppl.playlist_id = p.playlist_id
+                JOIN playlists p ON ppl.playlist_id = p.id
                 WHERE ppl.link_uuid = :link_uuid
                 AND ppl.is_active = 1
                 AND (ppl.expires_at IS NULL OR ppl.expires_at > NOW())
@@ -255,7 +255,7 @@ class PublicPlaylistRepository
                     p.name as playlist_name,
                     p.description as playlist_description
                 FROM playlist_public_links ppl
-                JOIN playlists p ON ppl.playlist_id = p.playlist_id
+                JOIN playlists p ON ppl.playlist_id = p.id
                 WHERE ppl.created_by_user_id = :user_id
                 AND ppl.is_active = 1
                 ORDER BY ppl.created_at DESC
@@ -277,7 +277,7 @@ class PublicPlaylistRepository
         try {
             $stmt = $this->db->prepare("
                 UPDATE playlist_public_links ppl
-                JOIN playlists p ON ppl.playlist_id = p.playlist_id
+                JOIN playlists p ON ppl.playlist_id = p.id
                 SET ppl.is_active = 0
                 WHERE ppl.link_uuid = :link_uuid
                 AND (ppl.created_by_user_id = :user_id OR p.user_id = :user_id2)
