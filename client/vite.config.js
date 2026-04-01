@@ -49,7 +49,7 @@ export default defineConfig({
     proxy: {
       // Proxy API calls to backend server
       "/api": {
-        target: "http://localhost:8080",
+        target: process.env.API_URL || "http://localhost:8080",
         changeOrigin: true,
         secure: false,
         configure: (proxy, options) => {
@@ -61,7 +61,7 @@ export default defineConfig({
       },
       // WebSocket proxy for real-time features
       "/ws": {
-        target: "ws://localhost:8080",
+        target: process.env.WS_URL || "ws://localhost:8080",
         ws: true,
         changeOrigin: true,
       },

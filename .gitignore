@@ -21,3 +21,4 @@ backend/*
 client/generate-icons.sh
 client/generate-splash-screens.sh
 sources/
+server/public/img/userdata/*/*
